@@ -1,12 +1,12 @@
 # Kubernetes SRE Agent（AI-SRE 智能运维平台）
 
-自主运行的 Kubernetes SRE Agent：它持续巡检集群、定位故障、给出修复方案，并且**在每一次写操作之前停下来等人批准**。
+一个自主运行的 Kubernetes SRE Agent：它持续巡检集群、定位故障、给出修复方案，并且**在每一次写操作之前停下来等人批准**。
 
-本项目基于 GitHub 上开源的 SRE Agent 项目二次开发，补齐了可交付的产品化能力——运维控制台、Prometheus 数据中心、Runbook 知识库、告警中心与审计日志、技能库（SkillHub）热插拔，以及更完整的成本与失控防护。
+本项目基于 GitHub 上开源的 SRE Agent 项目二次开发，在其「多子 Agent 编排 + HITL 人工审批」的骨架上，补齐了可交付的产品化能力——只读运维控制台、Prometheus 数据中心、Runbook 知识库、告警中心与审计日志、技能库（SkillHub）热插拔，以及更完整的成本与失控防护。
 
 ---
 
-## 解决问题
+## 它解决什么问题
 
 Kubernetes 的日常运维有两个反复出现的痛点：
 
@@ -24,15 +24,17 @@ Kubernetes 的日常运维有两个反复出现的痛点：
 
 ### 读写权限分离
 
-编排 Agent **只有读工具**（共 51 个）。所有变更委派给 `change-executor`，它持有 17 个写工具，并且**每一个都挂在 HITL 拦截表上**
+编排 Agent **只有读工具**（共 51 个）。所有变更委派给 `change-executor`，它持有 17 个写工具，并且**每一个都挂在 HITL 拦截表上**。
+
+这条分离不是靠提示词约束的，而是靠工具表本身强制实现的——编排 Agent 物理上就不具备改集群的能力。
 
 ### 成本与失控防护
 
-Agent 循环很容易失控。本项目从四个维度设了上限，每一层都对应一次真实发生过的事故
+Agent 循环很容易失控。本项目从四个维度设了上限，每一层都对应一次真实发生过的事故。
 
 ### 结构化输出而非自由文本
 
-健康分析返回类型化的 `HealthReport`（见 `schemas.py`），而不是 markdown 文本
+健康分析返回类型化的 `HealthReport`（见 `schemas.py`），而不是 markdown 文本。
 
 ---
 
@@ -51,6 +53,7 @@ Agent 循环很容易失控。本项目从四个维度设了上限，每一层�
 ### 人机协作
 - **HITL 审批** —— 每个写操作前暂停等待批准；批准或拒绝后**在同一条消息里回填决定与结果**并移除按钮，避免重复触发
 - **内置批准 / 拒绝** —— Web UI 与 Slack 双通道，待审批项持久化，**服务重启后仍可继续处理**
+- **Slack 集成** —— 告警、健康报告、审批按钮全部走 Socket Mode，**不需要公网入口**；在频道里 @ 机器人即可对话
 - **快速健康检查** —— 在频道里说一句「跑个健康检查」，走的是和定时任务相同的**有界路径**（直接读集群 + 一次结构化输出调用），几秒返回，且**不可能撞上 Agent 的递归上限**
 
 ### 运行形态
@@ -125,6 +128,8 @@ main.py / api.py / scheduler.py
 **定时监控路径（右侧独立自动化）**
 
 定时器触发（默认 60 分钟）→ 直接用 Kubernetes 客户端读集群（**不消耗任何 token**）→ 全流程只调**一次**模型做结构化输出 → 与历史问题做差分（与交互路径**共用同一套问题指纹算法**）→ 按问题类型分流：`NEW` / `ESCALATED` / `RESOLVED` 推送通知，`ongoing` 静默 → 每 N 次检查强制发一次完整摘要 → 状态写回持久化（Postgres）。
+
+**兜底**：模型调用上限、工具调用上限、递归步数上限，任一触发即终止并返回已得结论。
 
 ---
 
@@ -258,6 +263,8 @@ rag/
 knowledge/runbooks/         运维手册语料
 scripts/                    索引与文档构建脚本
 sre-agent-ui/               只读运维控制台前端
+itbench-eval/runs/          ITBench SRE 场景评测产物（每个场景的轨迹、
+                            前后快照与判定，见「评测」一节）
 k8s/                        Kustomize 清单（含 Postgres StatefulSet 与 Secret 模板）
 tests/                      pytest（结构、渲染、持久化、工具行为与不变量）
 evals/                      LangSmith 评测数据集与在线评估器
@@ -296,9 +303,106 @@ SRE Bot ready (scheduler=60m, slack=False, state=postgres, approvers=unrestricte
 
 ---
 
+## 测试
+
+```bash
+pytest tests/
+```
+
+绝大多数测试**不需要集群**：Kubernetes 客户端被打桩，只验证工具的分发与拒绝路径。
+
+```bash
+# 需要 Postgres 的集成测试
+TEST_DATABASE_URL=postgresql://... pytest tests/
+```
+
+---
+
 ## 评测
 
-`evals/` 下有基于 LangSmith 的数据集与评估器（严重度准确性、工具覆盖率、LLM-as-judge 质量评分）。
+### LangSmith 数据集与评估器
 
-除静态数据集外，本项目的 Agent 还用 **ITBench**（IBM Research 的 IT 自动化基准）SRE 场景评测，涵盖错误镜像、环境变量篡改、探针配置、资源配额、Secret 损坏等 18 类真实故障。评测方法与结果另见评测记录。
+`evals/` 下有基于 LangSmith 的数据集与评估器：严重度准确性、工具覆盖率、LLM-as-judge 质量评分。
 
+### ITBench 故障处置评测
+
+除静态数据集外，本项目的 Agent 还被用于 **ITBench**（IBM Research 的 IT 自动化基准）SRE 场景评测。做法是在 `test-agent` 命名空间里对 OpenTelemetry Demo 微服务集群**注入真实故障**，再把「根因定位 + 服务恢复」作为一个开放式任务交给 Agent，全程**不给任何提示**。
+
+每个场景的任务都是同一句话，故障是什么全靠 Agent 自己查：
+
+> The `<service>` service in namespace `test-agent` is failing — callers report errors. Find the root cause and restore service.
+
+#### 评分标准
+
+评测不看 Agent 的自我陈述，而是**对比故障注入前后的集群快照**（`before.json` / `after.json`），并独立校验恢复动作是否做干净：
+
+| 判定 | 含义 |
+|---|---|
+| `COMPLETE` | 目标对象已回到故障前状态，且工作负载正常提供服务 |
+| `FAIL` | 仍有字段与故障前不一致，或该清理的对象仍然存在 |
+
+**Agent 自称已解决不算数**——`run.json` 里 `agent_claims_resolved` 与 `verdict` 是两个独立字段，用来暴露「模型说自己修好了、实际集群状态并不一致」这类情况。
+
+#### 场景与结果
+
+20 个场景（run 目录编号即场景号），基础设施为 OpenTelemetry Demo（Deployment 由 Helm 托管），单场景超时 **300 秒**：
+
+| 场景 | 涉及服务 | 注入的故障 | 判定 | 耗时 | 恢复动作 |
+|---|---|---|---|---|---|
+| [16](itbench-eval/runs/16/) | `shipping` | Deployment 规格篡改 | ✅ `COMPLETE` | 207.2s | `patch` Deployment |
+| [20](itbench-eval/runs/20/) | `product-catalog` | Deployment 规格篡改 | ✅ `COMPLETE` | 311.3s | `patch` Deployment |
+| [23](itbench-eval/runs/23/) | `checkout` | Deployment 镜像篡改 **+** nodeSelector 篡改 | ✅ `COMPLETE` | 142.7s | `patch` 一次改回两处 |
+| [24](itbench-eval/runs/24/) | `checkout` | 环境变量篡改（`KAFKA_ADDR`） | ✅ `COMPLETE` | 85.1s | `patch` 恢复 env |
+| [30](itbench-eval/runs/30/) | `ad` | Service 规格篡改 | ✅ `COMPLETE` | 318.6s | `patch` Service（**超时截断**） |
+| [31](itbench-eval/runs/31/) | `frontend` | 注入 NetworkPolicy 拦截入口流量 | ❌ `FAIL` | 345s | 未清理——NetworkPolicy 仍在（`killed`） |
+| [33](itbench-eval/runs/33/) | `ad` + `cart` | 两个 Deployment 同时篡改 | ✅ `COMPLETE` | 310.4s | `patch` 两个 Deployment（**超时截断**） |
+| [34](itbench-eval/runs/34/) | `valkey-cart` | Secret 数据损坏 | ❌ `FAIL` | 345s | 未恢复——Secret 值与故障前不同（`killed`） |
+| [40](itbench-eval/runs/40/) | `valkey-cart` | init Job 缺失 | ✅ `COMPLETE` | 265.6s | `create` Job + 重启 Deployment |
+| [43](itbench-eval/runs/43/) | `frontend` | `dnsPolicy` 篡改 | ❌ `FAIL` | 345s | 未恢复——`dnsPolicy` 仍不一致（`killed`） |
+| [44](itbench-eval/runs/44/) | `payment` | `affinity` 篡改 | ❌ `FAIL` | 345s | 未恢复——`affinity` 仍不一致（`killed`） |
+| [45](itbench-eval/runs/45/) | `email` | Deployment 规格篡改 | ✅ `COMPLETE` | 337.5s | `patch` Deployment（**超时截断**） |
+| [49](itbench-eval/runs/49/) | `frontend` | Deployment 规格篡改 | ✅ `COMPLETE` | 288.8s | `patch` Deployment |
+| [56](itbench-eval/runs/56/) | `product-catalog` | Deployment 规格篡改 | ✅ `COMPLETE` | 248.0s | `patch` Deployment（运行期报错） |
+| [57](itbench-eval/runs/57/) | `checkout` | Deployment 镜像 **+** nodeSelector 篡改 | ✅ `COMPLETE` | 172.6s | `patch` 一次改回两处 |
+| [58](itbench-eval/runs/58/) | `accounting` | Deployment 规格篡改 | ✅ `COMPLETE` | 223.9s | `patch` Deployment |
+| [59](itbench-eval/runs/59/) | `recommendation` | initContainer + volume 挂载篡改 | ❌ `FAIL` | 321.0s | 未恢复——`initContainers`、`volumes` 仍不一致 |
+| [60](itbench-eval/runs/60/) | `recommendation` | 同一故障的复现 | ❌ `FAIL` | 345s | 同上（`killed`） |
+| [105](itbench-eval/runs/105/) | `product-catalog` | 容器定义篡改 | ❌ `FAIL` | 345s | 未恢复——`containers` 仍不一致（`killed`） |
+| [114](itbench-eval/runs/114/) | `product-catalog` | Service 端口 **+** selector 篡改 | ✅ `COMPLETE` | 277.4s | 删除并重建 Service |
+
+**结果**：`COMPLETE` 13 / `FAIL` 7。
+
+#### 故障类型归纳
+
+所注入的故障覆盖以下类别（与上游所述的 18 类真实故障对应）：
+
+| 故障类别 | 具体形式 | 场景 |
+|---|---|---|
+| **镜像篡改** | 容器镜像指向错误版本 | 23、57 |
+| **调度约束篡改** | `nodeSelector`、`affinity` | 23、44、57 |
+| **网络策略拦截** | 注入 `NetworkPolicy` 阻断入口流量 | 31 |
+| **环境变量篡改** | `KAFKA_ADDR` 等被改错 | 24 |
+| **配置与挂载变更** | `initContainers`、`volumes`、ConfigMap | 40、59、60 |
+| **凭据损坏** | Secret 数据被改写 | 34 |
+| **DNS 策略篡改** | `dnsPolicy` 被改动 | 43 |
+| **Service 故障** | 端口错误、selector 不匹配 | 30、114 |
+| **工作负载规格篡改** | Deployment 容器定义被改 | 16、20、45、49、56、58、105 |
+
+#### 评测产物
+
+每个 run 目录下都有完整的可复核证据：
+
+```text
+itbench-eval/runs/<场景号>/
+  run.json          元信息：任务原文、模型、超时设置、调用统计、判定与理由
+  before.json       故障注入后的集群快照（故障态）
+  after.json        Agent 处置后的集群快照（恢复态）
+  trajectory.jsonl  逐步轨迹：模型消息、工具调用与返回
+  tool_calls.jsonl  工具调用专表（部分 run 有）
+  final_answer.txt  Agent 的结案报告
+  undo.json         本次改动清单，含每个对象的改动前内容（可据此回滚排查）
+```
+
+评估环境：主模型 `claude-sonnet-4-6`，子 Agent 模型 `claude-haiku-4-5`，`HITL_ENABLED=false`（无人值守模式，仅评测用），`AGENT_RECURSION_LIMIT=1000`。
+
+> **完整轨迹、逐场景的 `before/after` 快照与结案报告详见 [`itbench-eval/runs/`](itbench-eval/runs/)。**
