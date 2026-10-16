@@ -1,0 +1,16 @@
+[
+  {
+    "action": "create",
+    "kind": "Job",
+    "name": "valkey-cart-init",
+    "namespace": "test-agent",
+    "before": null
+  },
+  {
+    "action": "restart",
+    "kind": "Deployment",
+    "name": "valkey-cart",
+    "namespace": "test-agent",
+    "before": null
+  }
+]

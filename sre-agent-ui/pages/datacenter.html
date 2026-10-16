@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据中心</title>
+    <style id="theme-vars">
+/* SRE-Agent UI — light ops console tokens */
+
+:root {
+  /* Neutral foundation */
+  --sre-background: #ffffff;
+  --sre-foreground: #1f2937;
+  --sre-card: #ffffff;
+  --sre-card-foreground: #1f2937;
+  --sre-popover: #ffffff;
+  --sre-popover-foreground: #1f2937;
+  --sre-muted: #f3f4f6;
+  --sre-muted-foreground: #6b7280;
+  --sre-border: #e5e7eb;
+  --sre-input: #f9fafb;
+  --sre-ring: #0891b2;
+
+  /* Brand primary — cyan */
+  --sre-primary: #0e7490;
+  --sre-primary-foreground: #ffffff;
+  --sre-primary-hover: #155e75;
+  --sre-primary-subtle: rgba(14, 116, 144, 0.10);
+
+  /* Semantic surfaces */
+  --sre-surface: #ffffff;
+  --sre-surface-2: #f3f4f6;
+  --sre-surface-3: #e5e7eb;
+  --sre-line: #e5e7eb;
+
+  /* State colors */
+  --sre-state-success: #16a34a;
+  --sre-state-success-subtle: rgba(22, 163, 74, 0.12);
+  --sre-state-warning: #d97706;
+  --sre-state-warning-subtle: rgba(217, 119, 6, 0.12);
+  --sre-state-error: #dc2626;
+  --sre-state-error-subtle: rgba(220, 38, 38, 0.12);
+  --sre-state-info: #2563eb;
+  --sre-state-info-subtle: rgba(37, 99, 235, 0.12);
+
+  /* Radius */
+  --sre-radius-small: 4px;
+  --sre-radius-medium: 8px;
+  --sre-radius-large: 12px;
+
+  /* Typography */
+  --sre-font-sans: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --sre-font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+}
+
+.light {
+  color-scheme: light;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--sre-background);
+    --color-foreground: var(--sre-foreground);
+    --color-card: var(--sre-card);
+    --color-card-foreground: var(--sre-card-foreground);
+    --color-popover: var(--sre-popover);
+    --color-popover-foreground: var(--sre-popover-foreground);
+    --color-primary: var(--sre-primary);
+    --color-primary-foreground: var(--sre-primary-foreground);
+    --color-muted: var(--sre-muted);
+    --color-muted-foreground: var(--sre-muted-foreground);
+    --color-border: var(--sre-border);
+    --color-input: var(--sre-input);
+    --color-ring: var(--sre-ring);
+    --radius-sm: var(--sre-radius-small);
+    --radius-md: var(--sre-radius-medium);
+    --radius-lg: var(--sre-radius-large);
+  }
+  @layer base {
+    body { background: var(--sre-background); color: var(--sre-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--sre-background); }
+      .text-background { color: var(--sre-background); }
+      .border-background { border-color: var(--sre-background); }
+      .ring-background { --tw-ring-color: var(--sre-background); }
+      .bg-foreground { background-color: var(--sre-foreground); }
+      .text-foreground { color: var(--sre-foreground); }
+      .border-foreground { border-color: var(--sre-foreground); }
+      .ring-foreground { --tw-ring-color: var(--sre-foreground); }
+      .bg-card { background-color: var(--sre-card); }
+      .text-card { color: var(--sre-card); }
+      .border-card { border-color: var(--sre-card); }
+      .ring-card { --tw-ring-color: var(--sre-card); }
+      .bg-card-foreground { background-color: var(--sre-card-foreground); }
+      .text-card-foreground { color: var(--sre-card-foreground); }
+      .border-card-foreground { border-color: var(--sre-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--sre-card-foreground); }
+      .bg-popover { background-color: var(--sre-popover); }
+      .text-popover { color: var(--sre-popover); }
+      .border-popover { border-color: var(--sre-popover); }
+      .ring-popover { --tw-ring-color: var(--sre-popover); }
+      .bg-popover-foreground { background-color: var(--sre-popover-foreground); }
+      .text-popover-foreground { color: var(--sre-popover-foreground); }
+      .border-popover-foreground { border-color: var(--sre-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--sre-popover-foreground); }
+      .bg-primary { background-color: var(--sre-primary); }
+      .text-primary { color: var(--sre-primary); }
+      .border-primary { border-color: var(--sre-primary); }
+      .ring-primary { --tw-ring-color: var(--sre-primary); }
+      .bg-primary-foreground { background-color: var(--sre-primary-foreground); }
+      .text-primary-foreground { color: var(--sre-primary-foreground); }
+      .border-primary-foreground { border-color: var(--sre-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--sre-primary-foreground); }
+      .bg-muted { background-color: var(--sre-muted); }
+      .text-muted { color: var(--sre-muted); }
+      .border-muted { border-color: var(--sre-muted); }
+      .ring-muted { --tw-ring-color: var(--sre-muted); }
+      .bg-muted-foreground { background-color: var(--sre-muted-foreground); }
+      .text-muted-foreground { color: var(--sre-muted-foreground); }
+      .border-muted-foreground { border-color: var(--sre-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--sre-muted-foreground); }
+      .bg-border { background-color: var(--sre-border); }
+      .text-border { color: var(--sre-border); }
+      .border-border { border-color: var(--sre-border); }
+      .ring-border { --tw-ring-color: var(--sre-border); }
+      .bg-input { background-color: var(--sre-input); }
+      .text-input { color: var(--sre-input); }
+      .border-input { border-color: var(--sre-input); }
+      .ring-input { --tw-ring-color: var(--sre-input); }
+      .bg-ring { background-color: var(--sre-ring); }
+      .text-ring { color: var(--sre-ring); }
+      .border-ring { border-color: var(--sre-ring); }
+      .ring-ring { --tw-ring-color: var(--sre-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+    <link rel="stylesheet" href="/ui/_dc-common.css">
+</head>
+<body class="min-h-screen font-sans antialiased">
+<div class="sre-shell">
+  <header class="sre-topbar">
+    <div class="sre-topbar-left">
+      <div class="sre-logo">
+        <span class="sre-logo-mark">SRE</span>
+        <span>AI-SRE</span>
+      </div>
+      <select class="sre-select" aria-label="集群">
+        <option>prod-cluster-01</option>
+        <option>staging-cluster</option>
+      </select>
+    </div>
+    <div class="sre-topbar-right">
+      <input class="sre-search" type="search" placeholder="搜索 Pod / 节点 / Runbook" />
+      <button class="sre-icon-btn" aria-label="通知"><i data-lucide="bell" style="width:16px;height:16px"></i></button>
+      <span class="sre-avatar">OP</span>
+    </div>
+  </header>
+  <nav class="sre-sidebar">
+    <a href="dashboard.html" class="sre-nav-item" data-nav-key="dashboard" data-dom-id="nav-dashboard"><i data-lucide="layout-dashboard"></i> 总览</a>
+    <div class="sre-nav-group">
+      <div class="sre-nav-item sre-nav-group-label"><i data-lucide="message-square"></i> 智能助手</div>
+      <div class="sre-nav-sub">
+        <a href="workbench.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="workbench" data-dom-id="nav-workbench">工作台</a>
+        <a href="skillhub.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="skillhub" data-dom-id="nav-skillhub">技能中心</a>
+      </div>
+    </div>
+    <a href="runbooks.html" class="sre-nav-item" data-nav-key="runbooks" data-dom-id="nav-runbooks"><i data-lucide="book-open"></i> Runbook 资料库</a>
+    <a href="health.html" class="sre-nav-item" data-nav-key="health" data-dom-id="nav-health"><i data-lucide="activity"></i> 健康检查</a>
+    <div class="sre-nav-group">
+      <div class="sre-nav-item sre-nav-group-label"><i data-lucide="bar-chart-3"></i> 数据中心</div>
+      <div class="sre-nav-sub">
+        <a href="datacenter.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="datacenter" data-dom-id="nav-datacenter" data-active="true">总览</a>
+        <a href="datacenter-pods.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-pods" data-dom-id="nav-dc-pods">Pod</a>
+        <a href="datacenter-workloads.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-workloads" data-dom-id="nav-dc-workloads">工作负载</a>
+        <a href="datacenter-nodes.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-nodes" data-dom-id="nav-dc-nodes">节点</a>
+        <a href="datacenter-storage.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-storage" data-dom-id="nav-dc-storage">存储</a>
+      </div>
+    </div>
+    <a href="alerts.html" class="sre-nav-item" data-nav-key="alerts" data-dom-id="nav-alerts"><i data-lucide="bell-ring"></i> 告警中心</a>
+    <a href="approvals.html" class="sre-nav-item" data-nav-key="approvals" data-dom-id="nav-approvals"><i data-lucide="shield-check"></i> 审批中心</a>
+    <a href="audit.html" class="sre-nav-item" data-nav-key="audit" data-dom-id="nav-audit"><i data-lucide="clipboard-list"></i> 审计日志</a>
+  </nav>
+
+  <main class="sre-main">
+    <div class="dc-header">
+      <div>
+        <h1 class="sre-section-title" style="margin-bottom:4px">数据中心</h1>
+        <div class="sre-text-tertiary" id="dc-subtitle">集群指标来自 Prometheus</div>
+      </div>
+      <div class="dc-controls">
+        <span class="sre-text-tertiary">时间范围</span>
+        <div class="dc-range" id="dc-range" role="group" aria-label="时间范围">
+          <button type="button" data-range="15m">15 分钟</button>
+          <button type="button" data-range="1h" data-active="true">1 小时</button>
+          <button type="button" data-range="6h">6 小时</button>
+          <button type="button" data-range="24h">24 小时</button>
+        </div>
+        <button type="button" id="dc-refresh" class="sre-btn sre-btn-secondary sre-btn-sm">
+          <i data-lucide="refresh-cw" style="width:14px;height:14px"></i> 刷新
+        </button>
+      </div>
+    </div>
+
+    <div id="dc-banner" class="sre-card" style="margin-bottom:16px;padding:14px 20px;display:none"></div>
+
+    <!-- Headline numbers. Each is a single current value, so a stat tile is the
+         right form - a one-bar bar chart would say less. -->
+    <div class="sre-kpi-grid" style="margin-bottom:24px">
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" id="kpi-cpu">—</div>
+        <div class="sre-kpi-label">CPU 使用率</div>
+        <div class="sre-kpi-delta sre-text-muted" id="kpi-cpu-delta">—</div>
+      </div>
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" id="kpi-mem">—</div>
+        <div class="sre-kpi-label">内存使用率</div>
+        <div class="sre-kpi-delta sre-text-muted" id="kpi-mem-delta">—</div>
+      </div>
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" id="kpi-disk">—</div>
+        <div class="sre-kpi-label">磁盘使用率</div>
+        <!-- A ratio against a capacity: a meter reads it better than a bare number. -->
+        <div class="dc-meter" aria-hidden="true"><div class="dc-meter-fill" id="kpi-disk-bar" style="width:0%"></div></div>
+        <div class="sre-kpi-delta sre-text-muted" id="kpi-disk-delta">—</div>
+      </div>
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" id="kpi-containers">—</div>
+        <div class="sre-kpi-label">运行容器</div>
+        <div class="sre-kpi-delta sre-text-muted" id="kpi-targets">—</div>
+      </div>
+    </div>
+
+    <!-- Two single-series trends. Deliberately two charts rather than one
+         dual-axis chart: CPU and memory share a unit but not a scale, and a
+         second y-axis would let the two lines be read against each other
+         arbitrarily. -->
+    <div class="dc-grid-2">
+      <div class="sre-card dc-panel">
+        <div class="dc-panel-head">
+          <div>
+            <div class="dc-panel-title">CPU 使用率趋势</div>
+            <div class="dc-panel-sub" id="cpu-sub">—</div>
+          </div>
+          <div class="dc-legend"><span class="dc-legend-swatch" style="background:#2a78d6"></span>CPU</div>
+        </div>
+        <div class="dc-chart" id="cpu-chart"></div>
+      </div>
+      <div class="sre-card dc-panel">
+        <div class="dc-panel-head">
+          <div>
+            <div class="dc-panel-title">内存使用率趋势</div>
+            <div class="dc-panel-sub" id="mem-sub">—</div>
+          </div>
+          <div class="dc-legend"><span class="dc-legend-swatch" style="background:#eb6834"></span>内存</div>
+        </div>
+        <div class="dc-chart" id="mem-chart"></div>
+      </div>
+    </div>
+
+    <!-- Magnitude comparison across pods: bar, one hue, length carries the
+         value. Every bar is directly labelled, so the numbers are readable
+         without hovering. -->
+    <div class="dc-grid-2">
+      <div class="sre-card dc-panel">
+        <div class="dc-panel-title">Pod CPU 用量 Top 6</div>
+        <div class="dc-panel-sub">按 5 分钟速率均值，毫核 (m)</div>
+        <div id="cpu-bars" class="dc-bars"></div>
+      </div>
+      <div class="sre-card dc-panel">
+        <div class="dc-panel-title">Pod 内存用量 Top 6</div>
+        <div class="dc-panel-sub">工作集内存 (working set)</div>
+        <div id="mem-bars" class="dc-bars"></div>
+      </div>
+    </div>
+
+    <!-- Usage against configured quota. The form is a meter, not a bar: each
+         row is one ratio against its own limit, and a shared bar scale would
+         compare containers with incomparable limits. -->
+    <div class="sre-card dc-panel" style="margin-bottom:24px">
+      <div class="dc-panel-head">
+        <div>
+          <div class="dc-panel-title">资源用量 vs 配额</div>
+          <div class="dc-panel-sub" id="quota-sub">—</div>
+        </div>
+      </div>
+      <div class="dc-grid-2" style="gap:28px;margin-bottom:0">
+        <div>
+          <div class="dc-quota-head">内存</div>
+          <div id="quota-mem"></div>
+        </div>
+        <div>
+          <div class="dc-quota-head">CPU</div>
+          <div id="quota-cpu"></div>
+        </div>
+      </div>
+      <div id="quota-unlimited" class="dc-quota-note"></div>
+    </div>
+
+    <div class="sre-card dc-panel">
+      <div class="dc-panel-head">
+        <div>
+          <div class="dc-panel-title">抓取目标</div>
+          <div class="dc-panel-sub" id="targets-sub">—</div>
+        </div>
+      </div>
+      <div id="targets-table"></div>
+    </div>
+
+    <div class="dc-foot">
+      <span class="sre-text-tertiary" id="dc-checked-at"></span>
+      <span class="sre-text-tertiary" id="dc-prom-url"></span>
+    </div>
+  </main>
+</div>
+
+    <script>lucide.createIcons();</script>
+
+    <style>
+  .sre-shell { display: flex; min-height: 100vh; background: var(--sre-background); color: var(--sre-foreground); font-family: var(--sre-font-sans); }
+  .sre-topbar { position: fixed; inset: 0 0 auto 0; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--sre-surface); border-bottom: 1px solid var(--sre-line); z-index: 50; }
+  .sre-topbar-left, .sre-topbar-right { display: flex; align-items: center; gap: 16px; }
+  .sre-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -0.02em; }
+  .sre-logo-mark { width: 28px; height: 28px; border-radius: var(--sre-radius-medium); background: var(--sre-primary); color: var(--sre-primary-foreground); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .sre-select { height: 32px; padding: 0 28px 0 12px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 13px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+  .sre-search { width: 240px; height: 32px; padding: 0 12px 0 32px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 13px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 10px center; }
+  .sre-icon-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--sre-radius-medium); background: transparent; border: 1px solid var(--sre-border); color: var(--sre-muted-foreground); cursor: pointer; }
+  .sre-avatar { width: 30px; height: 30px; border-radius: 9999px; background: var(--sre-surface-3); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; color: var(--sre-muted-foreground); border: 1px solid var(--sre-border); }
+  .sre-sidebar { position: fixed; top: 56px; left: 0; bottom: 0; width: 220px; padding: 16px 12px; background: var(--sre-surface); border-right: 1px solid var(--sre-line); display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+  .sre-nav-item { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-radius: var(--sre-radius-medium); color: var(--sre-muted-foreground); font-size: 14px; text-decoration: none; transition: background 120ms ease, color 120ms ease; }
+  .sre-nav-item:hover { background: var(--sre-surface-2); color: var(--sre-foreground); }
+  .sre-nav-item[data-active="true"] { background: var(--sre-primary-subtle); color: var(--sre-primary); }
+  .sre-nav-item i { width: 18px; height: 18px; }
+  .sre-nav-group { display: flex; flex-direction: column; }
+  .sre-nav-group-label { cursor: default; }
+  .sre-nav-group-label:hover { background: transparent; color: var(--sre-muted-foreground); }
+  .sre-nav-sub { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 6px 9px; padding-left: 16px; border-left: 1px solid var(--sre-border); }
+  .sre-nav-sub-item { height: 34px; font-size: 13px; padding-left: 10px; }
+  .sre-main { margin-left: 220px; margin-top: 56px; min-height: calc(100vh - 56px); padding: 24px; flex: 1 1 auto; min-width: 0; }
+  .sre-card { background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); }
+  .sre-section-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; }
+  .sre-kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .sre-kpi { padding: 20px; }
+  .sre-kpi-value { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .sre-kpi-label { font-size: 13px; color: var(--sre-muted-foreground); margin-top: 6px; }
+  .sre-kpi-delta { font-size: 12px; margin-top: 8px; }
+  .sre-list { display: flex; flex-direction: column; }
+  .sre-list-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--sre-border); gap: 12px; }
+  .sre-list-row:last-child { border-bottom: none; }
+  .sre-list-meta { font-size: 13px; color: var(--sre-muted-foreground); }
+  .sre-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--sre-radius-medium); font-size: 12px; font-weight: 600; }
+  .sre-badge-error { background: var(--sre-state-error-subtle); color: var(--sre-state-error); }
+  .sre-badge-warning { background: var(--sre-state-warning-subtle); color: var(--sre-state-warning); }
+  .sre-badge-success { background: var(--sre-state-success-subtle); color: var(--sre-state-success); }
+  .sre-badge-info { background: var(--sre-state-info-subtle); color: var(--sre-state-info); }
+  .sre-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: var(--sre-radius-medium); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 120ms ease; }
+  .sre-btn-primary { background: var(--sre-primary); color: var(--sre-primary-foreground); }
+  .sre-btn-primary:hover { background: var(--sre-primary-hover); }
+  .sre-btn-secondary { background: var(--sre-surface-2); color: var(--sre-foreground); border: 1px solid var(--sre-border); }
+  .sre-btn-secondary:hover { background: var(--sre-surface-3); }
+  .sre-btn-sm { height: 30px; padding: 0 12px; font-size: 13px; }
+  .sre-input { height: 40px; padding: 0 12px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 14px; }
+  .sre-text-muted { color: var(--sre-muted-foreground); }
+  .sre-text-tertiary { color: var(--sre-muted-foreground); font-size: 13px; }
+  .sre-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .sre-table th, .sre-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--sre-border); }
+  .sre-table th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sre-muted-foreground); font-weight: 600; }
+  .sre-table tr:last-child td { border-bottom: none; }
+  .sre-empty { padding: 48px; text-align: center; color: var(--sre-muted-foreground); }
+  .sre-status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+  .sre-status-pass { background: var(--sre-state-success); }
+  .sre-status-warn { background: var(--sre-state-warning); }
+  .sre-status-fail { background: var(--sre-state-error); }
+  .sre-health-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .sre-health-card { padding: 20px; }
+  .sre-health-score { font-size: 36px; font-weight: 700; }
+  .sre-check-list { display: flex; flex-direction: column; }
+  .sre-check-row { display: grid; grid-template-columns: 2fr 1fr 1fr 100px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--sre-border); gap: 12px; font-size: 14px; }
+  .sre-check-row:last-child { border-bottom: none; }
+  .sre-check-name { font-weight: 600; }
+  .sre-panel { background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); margin-bottom: 16px; overflow: hidden; }
+  .sre-panel-head { padding: 14px 20px; border-bottom: 1px solid var(--sre-border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .sre-panel-title { font-size: 15px; font-weight: 600; }
+  .sre-panel-body { padding: 6px 20px; }
+  .sre-kv-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--sre-border); font-size: 14px; }
+  .sre-kv-row:last-child { border-bottom: none; }
+  .sre-kv-name { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sre-kv-meta { font-size: 13px; color: var(--sre-muted-foreground); min-width: 0; }
+  .sre-bar-track { height: 8px; border-radius: 9999px; background: var(--sre-surface-3); overflow: hidden; flex: 1 1 auto; min-width: 80px; }
+  .sre-bar { height: 100%; border-radius: 9999px; background: var(--sre-primary); }
+  .sre-bar-warn { background: var(--sre-state-warning); }
+  .sre-bar-err { background: var(--sre-state-error); }
+  .sre-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+  .sre-conn-ok { background: var(--sre-state-success-subtle); color: var(--sre-state-success); }
+  .sre-conn-warn { background: var(--sre-state-warning-subtle); color: var(--sre-state-warning); }
+  .sre-conn-err { background: var(--sre-state-error-subtle); color: var(--sre-state-error); }
+  @media (max-width: 900px) { .sre-grid-2 { grid-template-columns: 1fr; } }
+</style>
+
+
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var RANGE = '1h';
+
+  // Validated against this page's #ffffff card surface: lightness band, chroma
+  // floor, CVD separation (ΔE 24.7), normal-vision floor (ΔE 33.6) and >=3:1
+  // contrast all pass. Do not substitute by eye - re-run the palette validator.
+  var CPU_COLOR = '#2a78d6';
+  var MEM_COLOR = '#eb6834';
+
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+
+  function el(tag, attrs) {
+    var n = document.createElementNS(SVG_NS, tag);
+    for (var k in attrs) { if (attrs[k] !== null && attrs[k] !== undefined) n.setAttribute(k, attrs[k]); }
+    return n;
+  }
+
+  function esc(s) {
+    return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function pct(v) { return (v === null || v === undefined) ? '—' : v.toFixed(1) + '%'; }
+
+  function fmtBytes(n) {
+    if (n === null || n === undefined) { return '—'; }
+    var g = n / Math.pow(1024, 3);
+    return g >= 1 ? g.toFixed(1) + ' GB' : (n / Math.pow(1024, 2)).toFixed(0) + ' MB';
+  }
+
+  function fmtMilli(v) {
+    if (v === null || v === undefined) { return '—'; }
+    if (v < 1) { return v.toFixed(2) + 'm'; }
+    return v.toFixed(v < 10 ? 1 : 0) + 'm';
+  }
+
+  function fmtMemMiB(v) {
+    if (v === null || v === undefined) { return '—'; }
+    return v >= 1024 ? (v / 1024).toFixed(2) + 'Gi' : v.toFixed(0) + 'Mi';
+  }
+
+  function clock(ts) {
+    var d = new Date(ts * 1000);
+    return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  }
+
+  function clockSec(ts) {
+    var d = new Date(ts * 1000);
+    return clock(ts) + ':' + ('0' + d.getSeconds()).slice(-2);
+  }
+
+  // Round a maximum up to a readable axis top (1/2/5 x 10^n) so gridline
+  // labels are round numbers rather than the data's own extremes.
+  function niceMax(v) {
+    if (!(v > 0)) { return 1; }
+    var exp = Math.floor(Math.log(v) / Math.LN10);
+    var base = Math.pow(10, exp);
+    var f = v / base;
+    var step = f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10;
+    return step * base;
+  }
+
+  // ---------------------------------------------------------------- line
+  function renderLine(host, points, color, unit) {
+    host.innerHTML = '';
+    if (!points || points.length < 2) {
+      host.innerHTML = '<div class="sre-empty" style="padding:32px">该时间范围内没有采样点</div>';
+      return;
+    }
+
+    var W = host.clientWidth || 480;
+    var H = 176;
+    var pad = { t: 14, r: 58, b: 26, l: 44 };
+    var pw = Math.max(10, W - pad.l - pad.r);
+    var ph = H - pad.t - pad.b;
+
+    var xs = points.map(function (p) { return p[0]; });
+    var ys = points.map(function (p) { return p[1]; });
+    var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+    var yMax = niceMax(Math.max.apply(null, ys) * 1.15);
+
+    var X = function (t) { return pad.l + (x1 === x0 ? 0 : (t - x0) / (x1 - x0)) * pw; };
+    var Y = function (v) { return pad.t + ph - (v / yMax) * ph; };
+
+    var svg = el('svg', { width: '100%', height: H, viewBox: '0 0 ' + W + ' ' + H, role: 'img' });
+
+    // Recessive grid + axis labels (text tokens, never the series colour).
+    [0, 0.5, 1].forEach(function (f) {
+      var v = yMax * f, y = Y(v);
+      svg.appendChild(el('line', { x1: pad.l, x2: pad.l + pw, y1: y, y2: y, stroke: 'var(--sre-border)', 'stroke-width': 1 }));
+      var lab = el('text', { x: pad.l - 8, y: y + 4, 'text-anchor': 'end', 'font-size': 11, fill: 'var(--sre-muted-foreground)' });
+      lab.textContent = (yMax <= 10 ? v.toFixed(1) : Math.round(v)) + (unit || '');
+      svg.appendChild(lab);
+    });
+
+    var line = points.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1); }).join(' ');
+    var area = line + ' L' + X(x1).toFixed(1) + ',' + Y(0).toFixed(1) + ' L' + X(x0).toFixed(1) + ',' + Y(0).toFixed(1) + ' Z';
+
+    svg.appendChild(el('path', { d: area, fill: color, opacity: 0.1 }));
+    svg.appendChild(el('path', { d: line, fill: 'none', stroke: color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+
+    // Time axis: start and end only - enough to orient, not a tick per point.
+    [[x0, 'start', pad.l], [x1, 'end', pad.l + pw]].forEach(function (t) {
+      var tx = el('text', { x: t[2], y: H - 8, 'text-anchor': t[1], 'font-size': 11, fill: 'var(--sre-muted-foreground)' });
+      tx.textContent = clock(t[0]);
+      svg.appendChild(tx);
+    });
+
+    // Direct label on the final point, in text ink - the series colour stays
+    // on the mark.
+    var last = points[points.length - 1];
+    var lx = X(last[0]), ly = Y(last[1]);
+    svg.appendChild(el('circle', { cx: lx, cy: ly, r: 4, fill: color, stroke: 'var(--sre-card)', 'stroke-width': 2 }));
+    var lv = el('text', { x: Math.min(lx + 10, W - 4), y: ly + 4, 'font-size': 12, 'font-weight': 600, fill: 'var(--sre-foreground)', 'text-anchor': lx + 46 > W ? 'end' : 'start' });
+    lv.textContent = last[1].toFixed(1) + (unit || '');
+    svg.appendChild(lv);
+
+    // --- hover layer: crosshair + tooltip ---
+    var cross = el('line', { x1: 0, x2: 0, y1: pad.t, y2: pad.t + ph, stroke: 'var(--sre-muted-foreground)', 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0 });
+    var dot = el('circle', { cx: 0, cy: 0, r: 4.5, fill: color, stroke: 'var(--sre-card)', 'stroke-width': 2, opacity: 0 });
+    svg.appendChild(cross); svg.appendChild(dot);
+
+    var hit = el('rect', { x: pad.l, y: pad.t, width: pw, height: ph, fill: 'transparent', style: 'cursor:crosshair' });
+    svg.appendChild(hit);
+    host.appendChild(svg);
+
+    var tip = document.createElement('div');
+    tip.className = 'dc-tip';
+    host.appendChild(tip);
+
+    function nearest(px) {
+      var best = 0, bd = Infinity;
+      for (var i = 0; i < points.length; i++) {
+        var d = Math.abs(X(points[i][0]) - px);
+        if (d < bd) { bd = d; best = i; }
+      }
+      return best;
+    }
+
+    function move(ev) {
+      var box = svg.getBoundingClientRect();
+      var px = (ev.clientX - box.left) * (W / box.width);
+      var i = nearest(px), p = points[i];
+      var cx = X(p[0]), cy = Y(p[1]);
+      cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); cross.setAttribute('opacity', 1);
+      dot.setAttribute('cx', cx); dot.setAttribute('cy', cy); dot.setAttribute('opacity', 1);
+      tip.innerHTML = '<div class="dc-tip-v">' + esc(p[1].toFixed(1)) + (unit || '') + '</div><div class="dc-tip-t">' + esc(clockSec(p[0])) + '</div>';
+      tip.setAttribute('data-show', 'true');
+      var tw = tip.offsetWidth || 80;
+      var left = (cx / W) * box.width + 14;
+      if (left + tw > box.width) { left = (cx / W) * box.width - tw - 14; }
+      tip.style.left = Math.max(0, left) + 'px';
+      tip.style.top = Math.max(0, (cy / H) * box.height - 46) + 'px';
+    }
+
+    function leave() {
+      cross.setAttribute('opacity', 0); dot.setAttribute('opacity', 0);
+      tip.setAttribute('data-show', 'false');
+    }
+
+    hit.addEventListener('mousemove', move);
+    hit.addEventListener('mouseleave', leave);
+  }
+
+  // ---------------------------------------------------------------- bars
+  function renderBars(host, rows, color, fmt) {
+    if (!rows || !rows.length) {
+      host.innerHTML = '<div class="sre-empty" style="padding:24px">没有数据</div>';
+      return;
+    }
+    var max = Math.max.apply(null, rows.map(function (r) { return r.value; })) || 1;
+    host.innerHTML = rows.map(function (r) {
+      var w = Math.max(2, (r.value / max) * 100);
+      return '<div class="dc-bar-row">' +
+        '<div class="dc-bar-name" title="' + esc(r.pod) + '">' + esc(r.pod) + '</div>' +
+        '<div class="dc-bar-track"><div class="dc-bar-fill" style="width:' + w.toFixed(1) + '%;background:' + color + '"></div></div>' +
+        '<div class="dc-bar-value">' + esc(fmt(r.value)) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  // ---------------------------------------------------------------- quotas
+  function fmtQuota(v, res) {
+    if (v === null || v === undefined) { return '—'; }
+    return res === 'memory'
+      ? (v >= 100 ? v.toFixed(0) : v.toFixed(1)) + ' MiB'
+      : (v >= 10 ? v.toFixed(0) : v.toFixed(1)) + 'm';
+  }
+
+  function renderMeters(host, rows, res) {
+    if (!rows || !rows.length) {
+      host.innerHTML = '<div class="dc-quota-empty">没有容器设置了' +
+        (res === 'memory' ? '内存' : 'CPU') + '限值</div>';
+      return;
+    }
+    host.innerHTML = rows.map(function (r) {
+      var ratio = r.ratio || 0;
+      var pct = Math.min(100, ratio * 100);
+      // Thresholds match what the performance-analyzer looks for: 80% is the
+      // point at which throttling (CPU) or OOM (memory) becomes plausible.
+      var level = ratio >= 1 ? 'crit' : ratio >= 0.8 ? 'warn' : 'ok';
+      var fill = level === 'crit' ? 'var(--sre-state-error)'
+        : level === 'warn' ? 'var(--sre-state-warning)'
+          : (res === 'memory' ? MEM_COLOR : CPU_COLOR);
+      var label = r.pod + (r.container ? ' [' + r.container + ']' : '');
+      return '<div class="dc-quota-row">' +
+        '<div class="dc-quota-name" title="' + esc(label) + '">' + esc(label) + '</div>' +
+        '<div class="dc-meter" style="margin:0;height:8px"><div class="dc-meter-fill" style="width:' + pct.toFixed(1) + '%;background:' + fill + '"></div></div>' +
+        '<div class="dc-quota-val">' + esc(fmtQuota(r.usage, res)) + ' / ' + esc(fmtQuota(r.limit, res)) + '</div>' +
+        '<div class="dc-quota-pct" data-level="' + level + '">' + pct.toFixed(0) + '%</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function renderQuotas(q) {
+    if (!q) { return; }
+    var mem = q.memory || [], cpu = q.cpu || [], unl = q.unlimited || [];
+
+    renderMeters($('quota-mem'), mem, 'memory');
+    renderMeters($('quota-cpu'), cpu, 'cpu');
+    $('quota-sub').textContent =
+      mem.length + ' 个容器设了内存限值 · ' + cpu.length + ' 个设了 CPU 限值 · ' +
+      unl.length + ' 个未设限值';
+
+    var note = $('quota-unlimited');
+    if (!unl.length) {
+      note.innerHTML = '所有容器都已设置限值。';
+      return;
+    }
+    // Worth stating plainly: a container with no limit has no quota to compare
+    // against, so under node pressure it is evicted by consumption rather than
+    // protected by its request.
+    var memUnl = unl.filter(function (u) { return u.resource === 'memory'; });
+    var cpuUnl = unl.filter(function (u) { return u.resource === 'cpu'; });
+    // Ranked within each resource, never across them: MiB and millicores do not
+    // share a scale, so one combined "top consumers" list would be nonsense.
+    function topOf(list, res) {
+      return list.length
+        ? esc(list[0].pod + ' [' + list[0].container + ']') + '（' + esc(fmtQuota(list[0].usage, res)) + '）'
+        : '—';
+    }
+    note.innerHTML = '<span class="warn">⚠ ' + unl.length + ' 个容器未设置限值</span>' +
+      '（内存 ' + memUnl.length + ' 个、CPU ' + cpuUnl.length + ' 个）。' +
+      '无限制的容器在节点资源紧张时按实际消耗被驱逐，配额保护不到它。<br>' +
+      '未设限值中消耗最大的 — 内存：' + topOf(memUnl, 'memory') +
+      '；CPU：' + topOf(cpuUnl, 'cpu') + '。';
+  }
+
+  // ---------------------------------------------------------------- targets
+  function renderTargets(rows) {
+    var host = $('targets-table');
+    if (!rows || !rows.length) {
+      host.innerHTML = '<div class="sre-empty" style="padding:24px">没有抓取目标数据</div>';
+      return;
+    }
+    // Grouped by job: a dozen rows of instance-level detail would bury the one
+    // number an operator scans for (is anything down).
+    var by = {};
+    rows.forEach(function (t) { (by[t.job] = by[t.job] || []).push(t); });
+    var jobs = Object.keys(by).sort();
+
+    var body = jobs.map(function (job) {
+      var list = by[job];
+      var up = list.filter(function (t) { return t.health === 'up'; }).length;
+      var allUp = up === list.length;
+      var badge = allUp
+        ? '<span class="sre-badge sre-badge-success">正常</span>'
+        : '<span class="sre-badge sre-badge-error">' + (list.length - up) + ' 个异常</span>';
+      var err = '';
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].health !== 'up' && list[i].error) { err = list[i].error; break; }
+      }
+      return '<tr>' +
+        '<td style="font-family:var(--sre-font-mono);font-size:13px">' + esc(job) + '</td>' +
+        '<td>' + up + ' / ' + list.length + '</td>' +
+        '<td>' + badge + '</td>' +
+        '<td class="sre-text-muted" style="font-size:12px">' + esc(err) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    host.innerHTML = '<table class="sre-table" style="margin-top:4px">' +
+      '<thead><tr><th>Job</th><th>实例</th><th>状态</th><th>最近错误</th></tr></thead>' +
+      '<tbody>' + body + '</tbody></table>';
+  }
+
+  // ---------------------------------------------------------------- render
+  function trendMax(points) {
+    if (!points || !points.length) { return null; }
+    return Math.max.apply(null, points.map(function (p) { return p[1]; }));
+  }
+
+  function render(d) {
+    var banner = $('dc-banner');
+
+    if (!d.connected) {
+      banner.style.display = 'block';
+      banner.innerHTML = '<i data-lucide="cloud-off" style="width:16px;height:16px"></i>' +
+        '<span style="margin-left:8px;font-weight:600">无法连接 Prometheus</span>' +
+        '<span style="margin-left:8px;opacity:.85">' + esc(d.error || '') + '</span>';
+      if (window.lucide) { window.lucide.createIcons(); }
+      $('dc-subtitle').textContent = '指标不可用';
+      return;
+    }
+
+    banner.style.display = 'block';
+    banner.innerHTML = '<i data-lucide="check-circle-2" style="width:16px;height:16px"></i>' +
+      '<span style="margin-left:8px;font-weight:600">已连接 Prometheus</span>' +
+      '<span style="margin-left:8px;opacity:.85">抓取目标 ' + d.targets_up + ' / ' + d.targets_total + ' 正常</span>';
+    if (window.lucide) { window.lucide.createIcons(); }
+
+    $('kpi-cpu').textContent = pct(d.cpu_percent);
+    $('kpi-mem').textContent = pct(d.mem_percent);
+    $('kpi-disk').textContent = pct(d.disk_percent);
+    $('kpi-containers').textContent = d.containers === null ? '—' : d.containers;
+
+    var cmax = trendMax(d.cpu_trend), mmax = trendMax(d.mem_trend);
+    $('kpi-cpu-delta').textContent = cmax === null ? '—' : '区间峰值 ' + cmax.toFixed(1) + '%';
+    $('kpi-mem-delta').textContent = mmax === null ? '—' : '区间峰值 ' + mmax.toFixed(1) + '%';
+
+    var dp = d.disk_percent === null ? 0 : Math.min(100, d.disk_percent);
+    $('kpi-disk-bar').style.width = dp + '%';
+    // A disk this full is worth flagging in the meter itself.
+    $('kpi-disk-bar').style.background = dp >= 90 ? 'var(--sre-state-error)' : dp >= 75 ? 'var(--sre-state-warning)' : CPU_COLOR;
+    $('kpi-disk-delta').textContent = (d.disk_used_bytes !== null && d.disk_total_bytes)
+      ? fmtBytes(d.disk_used_bytes) + ' / ' + fmtBytes(d.disk_total_bytes) : '—';
+
+    $('kpi-targets').textContent = '抓取目标 ' + d.targets_up + ' / ' + d.targets_total;
+
+    renderLine($('cpu-chart'), d.cpu_trend, CPU_COLOR, '%');
+    renderLine($('mem-chart'), d.mem_trend, MEM_COLOR, '%');
+    $('cpu-sub').textContent = d.cpu_trend.length + ' 个采样点 · 步长 ' + d.step_seconds + 's';
+    $('mem-sub').textContent = d.mem_trend.length + ' 个采样点 · 步长 ' + d.step_seconds + 's';
+
+    renderBars($('cpu-bars'), d.top_pods_cpu, CPU_COLOR, fmtMilli);
+    renderBars($('mem-bars'), d.top_pods_mem, MEM_COLOR, fmtMemMiB);
+    renderQuotas(d.quotas);
+
+    var down = d.targets.filter(function (t) { return t.health !== 'up'; }).length;
+    $('targets-sub').textContent = d.targets.length + ' 个目标，' + (d.targets.length - down) + ' 个正常';
+    renderTargets(d.targets);
+
+    $('dc-checked-at').textContent = '更新于 ' + new Date(d.checked_at).toLocaleTimeString('zh-CN');
+    $('dc-prom-url').textContent = d.prometheus_url || '';
+    $('dc-subtitle').textContent = '集群指标来自 Prometheus · 窗口 ' + d.range;
+  }
+
+  // ---------------------------------------------------------------- load
+  var loading = false;
+  function load() {
+    if (loading) { return; }
+    loading = true;
+    fetch('/api/ui/datacenter?range=' + encodeURIComponent(RANGE))
+      .then(function (r) { return r.json(); })
+      .then(function (d) { render(d); })
+      .catch(function (e) {
+        var b = $('dc-banner');
+        b.style.display = 'block';
+        b.innerHTML = '<i data-lucide="alert-triangle" style="width:16px;height:16px"></i>' +
+          '<span style="margin-left:8px;font-weight:600">请求失败</span>' +
+          '<span style="margin-left:8px;opacity:.85">' + esc(e.message) + '</span>';
+        if (window.lucide) { window.lucide.createIcons(); }
+      })
+      .then(function () { loading = false; });
+  }
+
+  document.querySelectorAll('#dc-range button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      RANGE = b.getAttribute('data-range');
+      document.querySelectorAll('#dc-range button').forEach(function (o) { o.removeAttribute('data-active'); });
+      b.setAttribute('data-active', 'true');
+      load();
+    });
+  });
+
+  $('dc-refresh').addEventListener('click', load);
+
+  // Redraw on resize: the SVG is sized from the container's pixel width, so a
+  // reflow would otherwise leave the plot stretched or clipped.
+  var rt = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(load, 220);
+  });
+
+  load();
+  setInterval(load, 30000);
+})();
+</script>
+  <script src="/ui/_sre-alerts.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+
+**Service restored.** Summary of the incident and the repair:
+
+**What was wrong.** The `frontend` Deployment in `test-agent` carried a `readinessProbe` on the container pointing at **port 40** (`httpGet /ready`). Nothing listens there — the app serves on 8080 — so the ReplicaSet created by that change could never mark its pod Ready. The rollout stalled (`frontend-86688f6f56` pod stuck `ContainerCreating`/Running-but-unready, `Readiness probe failed: dial tcp ...:40: connection refused`), leaving the `frontend` Service with a not-ready endpoint (degraded), while callers through `frontend-proxy` saw errors.
+
+**Why it was a fault, not configuration.** I confirmed against the Helm-rendered original (`otel-demo`, chart `opentelemetry-demo-0.42.3`) by reading the manifest myself: the chart's `frontend` Deployment has **no** probes — the container goes `image → ports → env → resources → securityContext`. A namespace probe audit confirmed `frontend` was the *only* workload with a readiness probe (all 24 others have none), so it had been added by the incident, not by configuration. It was the sole deviation from the chart on that object — image, ports, env, resources, securityContext, serviceAccount and the absence of nodeSelector/affinity/tolerations/initContainers all matched.
+
+**Repair.** Removed the injected `readinessProbe` (single-field patch, nothing else touched), restoring the object to its pre-incident state.
+
+**Proof of restoration.** The Deployment rolled back onto ReplicaSet `frontend-6f68f54c79` — the *same* ReplicaSet/pod that existed before the change — which proves the restored pod template is byte-identical to the pre-incident template (no other injected field remains). Deployment is `1/1 ready, 1 available, Progressing/Available: True`; the `frontend` Service now shows `1 ready / 0 not-ready`; no new warning events (the only `Unhealthy` event is the historical one on the now-deleted pod); the pod is `Ready: True, 0 restarts` and its access logs show live `200` responses on `/api/*`.
+
+One honest note: the `load-generator` browser user logs a continuous stream of `503 Service Unavailable` console messages. That is not the frontend: the frontend serves `200`s live, all 24 Services have healthy endpoints, and `grafana`/`jaeger`/`opensearch`/`prometheus`/`firepit` are deliberately disabled in this release's values while `frontend-proxy` still has routes for them — an environment-level, pre-existing condition unrelated to the fault I repaired.
+
+```json
+{
+  "root_cause": "Deployment/frontend in test-agent had an injected readinessProbe (httpGet /ready) targeting container port 40, where nothing listens, so its new ReplicaSet's pod could never become Ready, the rollout stalled, and the frontend Service was left with a not-ready endpoint.",
+  "evidence": [
+    "kubectl_get_resource deployment/frontend showed readinessProbe.httpGet.port=40 while the container's only port is 8080 (name 'service') and the app logs 'Local: http://frontend-6f68f54f79...:8080'",
+    "kubectl_describe_pod frontend-86688f6f56-bzm7p: Ready=False plus Warning Unhealthy 'Readiness probe failed: Get \"http://10.244.2.236:40/ready\": connect: connection refused'",
+    "kubectl_get_endpoints showed service/frontend degraded with 1 ready and 1 not-ready endpoint",
+    "The Helm-rendered original (helm release otel-demo, chart opentelemetry-demo-0.42.3) for Deployment/frontend contains no readinessProbe/livenessProbe at all (verified by reading the rendered manifest directly, lines 3142-3239)",
+    "kubectl_audit_probes: frontend was the only workload in test-agent with a readiness probe (all 24 other deployments have none), so the probe was added by the incident",
+    "The pre-existing pod frontend-6f68f54c79-22lj6 (created before the faulty revision 6) was Ready and served 200s, showing the app itself listens on 8080 and the probe target was the fault"
+  ],
+  "actions": [
+    {"tool": "task(change-executor) -> kubectl patch deployment frontend -n test-agent --type=strategic -p '{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"frontend\",\"readinessProbe\":null}]}}}}'", "target": "deployment/frontend", "result": "applied"}
+  ],
+  "verification": "Re-read deployment/frontend after the patch: revision 7, container now has only name/env/image/imagePullPolicy/ports(containerPort 8080)/resources/securityContext/termination fields — no readinessProbe, no added liveness/startup probe, and no nodeSelector/affinity/tolerations/initContainers; it matches the Helm-rendered chart spec field-for-field. The rollout returned to the pre-incident ReplicaSet frontend-6f68f54c79 (same pod frontend-6f68f54c79-22lj6), which proves the restored template is identical to the pre-incident one, so nothing else injected remains. Deployment reports desired=1, ready=1, available=1 with Available=True and Progressing=True (ReplicaSet has successfully progressed); kubectl_get_pods shows a single frontend pod Running/Ready with 0 restarts; kubectl_get_endpoints now shows service/frontend 1 ready, 0 not-ready (the degraded state is gone); no new warning events. Live frontend logs show ongoing HTTP 200 responses on /api/*. Separately, the load-generator's browser console still logs 503s for resources not served by the frontend (grafana/jaeger/opensearch/prometheus/firepit are disabled in this release's values while frontend-proxy still has routes for them); with the frontend serving 200s and every Service in the namespace showing healthy endpoints, this is pre-existing environment noise, not a frontend fault, and no frontend resource now deviates from its original configuration.",
+  "resolved": true
+}
+```

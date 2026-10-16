@@ -1,0 +1,37 @@
+
+Verification is complete and the service has recovered. Summary:
+
+**Root cause (one sentence):** The `checkout` Deployment's pod template had been tampered with — its container image was swapped to the unpullable `quay.io/it-bench/hello-bench-arm64:2.0.0` and a `nodeSelector: kubernetes.io/hostname: node1` constraint was injected — so the new ReplicaSet's pod could never start and the checkout rollout was stuck.
+
+**How I established it (evidence):**
+- `checkout` deployment (`revision 26`) had `containers[checkout].image = quay.io/it-bench/hello-bench-arm64:2.0.0`; the newest pod `checkout-69d7c967bc-2qz2r` was stuck in `ImagePullBackOff` (`Failed to pull image ... no match for platform`), leaving the deployment with 1 available pod from the *stale* old ReplicaSet and `kube_deployment_status_replicas_unavailable = 1`.
+- Caller-side symptom: `load-generator` logs full of `503 Service Unavailable`; the frontend's checkout calls failing while checkout was rolling over.
+- The template also carried `spec.template.spec.nodeSelector: {kubernetes.io/hostname: node1}` — **no other workload in the namespace has any nodeSelector** (verified checkout against payment, cart, frontend, email, shipping, product-catalog).
+- Sibling comparison ruled out the other oddities: `wait-for-kafka` initContainer (cart/shipping/product-catalog have the same `wait-for-<dep>` pattern), `readOnlyRootFilesystem: true` + `/tmp` emptyDir and 32Mi memory limit (same as product-catalog, the other Go service), and the absence of probes (uniform across the namespace). The env values all match their upstream addresses, and the Service selector/ports/labels are correct. No quotas, no NetworkPolicies, no LimitRanges in the namespace.
+
+**Fix applied:** one strategic-merge patch restoring the image to `ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout` **and** removing `nodeSelector` entirely (both changes undone, nothing else touched; init container and all other fields left intact).
+
+**Verification (re-read after the change):**
+- Deployment now `revision 27`: `image = ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout`, `nodeSelector` absent from the pod template, `wait-for-kafka` initContainer unchanged — the resulting template hash matched the previously-good ReplicaSet, confirming the original configuration was restored rather than just "made to pass".
+- Pods: only `checkout-5db68d9cf7-nxmnp` remains — `Running`, Ready, 0 restarts, and **scheduled on node2**, which could not have happened with the node1 pin still present. The bad ReplicaSet's pod is gone.
+- Endpoints: `checkout` 1 ready / 0 not-ready. `kube_deployment_status_replicas_unavailable` back to 0 (had been 1 during the failure window). The checkout pod is actively receiving network traffic (≈9 pkt/s ingress).
+- Warning events: the only checkout warnings are stale entries referencing pod names that no longer exist (`…clgg2`, `…zlxh5`, `…2qz2r`) citing the old bad image; nothing new since the fix. (The repeated `product-catalog` `FailedCreate`/ResourceQuota-webhook warnings are pre-existing, unrelated to checkout, and product-catalog is Running.)
+
+```json
+{
+  "root_cause": "The checkout Deployment's pod template had its container image replaced with the unpullable quay.io/it-bench/hello-bench-arm64:2.0.0 and an injected nodeSelector pinning it to node1, so the new ReplicaSet's pod stayed in ImagePullBackOff and the checkout rollout never completed.",
+  "evidence": [
+    "kubectl_get_resource deployment/checkout showed containers[checkout].image = quay.io/it-bench/hello-bench-arm64:2.0.0 and spec.template.spec.nodeSelector = {kubernetes.io/hostname: node1}",
+    "Pod checkout-69d7c967bc-2qz2r: Scheduled to node1, ImagePullBackOff, 'Failed to pull image quay.io/it-bench/hello-bench-arm64:2.0.0: no match for platform'",
+    "kube_deployment_status_replicas_unavailable{deployment=checkout} = 1 while kube_deployment_status_replicas_available = 1 (only the stale pre-fault ReplicaSet pod serving)",
+    "load-generator pod logs show repeated '503 Service Unavailable' during the window that checkout was rolling over",
+    "Sibling workloads (payment, cart, frontend, email, shipping, product-catalog) have no nodeSelector, while their wait-for-<dep> init containers, readOnlyRootFilesystem + /tmp, and memory limits match checkout's other fields, isolating image + nodeSelector as the injected changes",
+    "Rollout history showed revisions 25/26 introduced the foreign image after good revisions 7/15/24 with ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout"
+  ],
+  "actions": [
+    {"tool": "kubectl patch (via change-executor)", "target": "deployment/checkout", "result": "applied"}
+  ],
+  "verification": "Re-read deployment/checkout after the patch: revision 27 now has container image ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout, nodeSelector is entirely absent from spec.template.spec, and the wait-for-kafka initContainer is untouched; the controller reused the previously-good ReplicaSet. Pods list shows only checkout-5db68d9cf7-nxmnp Running/Ready/0 restarts on node2 (the node1-pinned bad pod is gone), service endpoints are 1 ready / 0 not-ready, kube_deployment_status_replicas_unavailable is back to 0, and no new Warning events reference existing checkout pods (only stale events for deleted 69d7c967bc pods).",
+  "resolved": true
+}
+```

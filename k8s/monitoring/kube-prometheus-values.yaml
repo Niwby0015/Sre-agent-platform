@@ -1,0 +1,127 @@
+# kube-prometheus-stack values for the local kind cluster.
+#
+# Grafana is DISABLED on purpose. Its image lives on Docker Hub, which is
+# unreachable from this machine, and a kind node uses its own containerd — it
+# does not inherit the registry mirror configured in the host's
+# /etc/docker/daemon.json. Every image this chart then needs comes from
+# quay.io / registry.k8s.io / ghcr.io, all of which are reachable. The project
+# also ships its own web UI, so Grafana would be redundant.
+#
+# Install:
+#   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+#   helm repo update
+#   helm upgrade --install kps prometheus-community/kube-prometheus-stack \
+#     --version 90.0.0 -n monitoring --create-namespace \
+#     -f k8s/monitoring/kube-prometheus-values.yaml
+#
+# This cluster is small (one kind node, ~7.9Gi allocatable), so retention and
+# every resource request below are sized down from the chart's defaults.
+
+grafana:
+  enabled: false
+
+# Scrapes node-level CPU / memory / filesystem / network. This is the primary
+# source of the metrics the SRE agent needs.
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      memory: 128Mi
+
+# Exposes Kubernetes object state (deployment replicas, PVC phase, resource
+# requests/limits) as the kube_* metric family. Without it there is no way to
+# ask "how much is this pod ALLOWED to use", only "how much is it using".
+#
+# The image needs a pre-load step on this network. registry.k8s.io answers on
+# /v2/ (401) but redirects the actual blob fetch to europe-west3-docker.pkg.dev,
+# which is blocked here (connection refused), so a plain pull leaves the pod in
+# ImagePullBackOff forever. The working route is daocloud's Kubernetes proxy:
+#
+#   docker pull k8s.m.daocloud.io/kube-state-metrics/kube-state-metrics:v2.20.0
+#   docker tag  k8s.m.daocloud.io/kube-state-metrics/kube-state-metrics:v2.20.0 \
+#               registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.20.0
+#   kind load docker-image \
+#               registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.20.0 \
+#               --name node1
+#
+# Re-tagging to the canonical name is what lets this file stay stock: the chart
+# asks for registry.k8s.io/... and the tag is not :latest, so the kubelet's
+# default IfNotPresent policy resolves it from the node's own containerd without
+# touching the network. If the version below is ever bumped, the pre-load has to
+# be repeated for the new tag.
+#
+# NOTE the key is kubeStateMetrics (camelCase), not kube-state-metrics. The
+# latter is the subchart's own values path and does NOT toggle it; the subchart
+# is gated by the dependency condition `kubeStateMetrics.enabled` in the chart's
+# Chart.yaml. Using the wrong key silently leaves the subchart enabled.
+kubeStateMetrics:
+  enabled: true
+
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+
+prometheusOperator:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 384Mi
+
+prometheus:
+  prometheusSpec:
+    # The chart defaults to 10d, which is far more history than a scratch
+    # cluster needs and is the main driver of memory use.
+    retention: 24h
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        memory: 1500Mi
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
+      limits:
+        memory: 192Mi
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+
+# kind runs the control plane as static pods and kube-proxy as a DaemonSet, so
+# the chart's default ServiceMonitors for these components point at endpoints
+# that do not exist here. Left enabled they produce permanent "target down"
+# noise with no signal. Disabled until the cluster layout actually warrants
+# them; kubelet/cAdvisor and node-exporter below are the ones that matter.
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeProxy:
+  enabled: false

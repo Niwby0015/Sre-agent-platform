@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>存储</title>
+    <style id="theme-vars">
+/* SRE-Agent UI — light ops console tokens */
+
+:root {
+  /* Neutral foundation */
+  --sre-background: #ffffff;
+  --sre-foreground: #1f2937;
+  --sre-card: #ffffff;
+  --sre-card-foreground: #1f2937;
+  --sre-popover: #ffffff;
+  --sre-popover-foreground: #1f2937;
+  --sre-muted: #f3f4f6;
+  --sre-muted-foreground: #6b7280;
+  --sre-border: #e5e7eb;
+  --sre-input: #f9fafb;
+  --sre-ring: #0891b2;
+
+  /* Brand primary — cyan */
+  --sre-primary: #0e7490;
+  --sre-primary-foreground: #ffffff;
+  --sre-primary-hover: #155e75;
+  --sre-primary-subtle: rgba(14, 116, 144, 0.10);
+
+  /* Semantic surfaces */
+  --sre-surface: #ffffff;
+  --sre-surface-2: #f3f4f6;
+  --sre-surface-3: #e5e7eb;
+  --sre-line: #e5e7eb;
+
+  /* State colors */
+  --sre-state-success: #16a34a;
+  --sre-state-success-subtle: rgba(22, 163, 74, 0.12);
+  --sre-state-warning: #d97706;
+  --sre-state-warning-subtle: rgba(217, 119, 6, 0.12);
+  --sre-state-error: #dc2626;
+  --sre-state-error-subtle: rgba(220, 38, 38, 0.12);
+  --sre-state-info: #2563eb;
+  --sre-state-info-subtle: rgba(37, 99, 235, 0.12);
+
+  /* Radius */
+  --sre-radius-small: 4px;
+  --sre-radius-medium: 8px;
+  --sre-radius-large: 12px;
+
+  /* Typography */
+  --sre-font-sans: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --sre-font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+}
+
+.light {
+  color-scheme: light;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--sre-background);
+    --color-foreground: var(--sre-foreground);
+    --color-card: var(--sre-card);
+    --color-card-foreground: var(--sre-card-foreground);
+    --color-popover: var(--sre-popover);
+    --color-popover-foreground: var(--sre-popover-foreground);
+    --color-primary: var(--sre-primary);
+    --color-primary-foreground: var(--sre-primary-foreground);
+    --color-muted: var(--sre-muted);
+    --color-muted-foreground: var(--sre-muted-foreground);
+    --color-border: var(--sre-border);
+    --color-input: var(--sre-input);
+    --color-ring: var(--sre-ring);
+    --radius-sm: var(--sre-radius-small);
+    --radius-md: var(--sre-radius-medium);
+    --radius-lg: var(--sre-radius-large);
+  }
+  @layer base {
+    body { background: var(--sre-background); color: var(--sre-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--sre-background); }
+      .text-background { color: var(--sre-background); }
+      .border-background { border-color: var(--sre-background); }
+      .ring-background { --tw-ring-color: var(--sre-background); }
+      .bg-foreground { background-color: var(--sre-foreground); }
+      .text-foreground { color: var(--sre-foreground); }
+      .border-foreground { border-color: var(--sre-foreground); }
+      .ring-foreground { --tw-ring-color: var(--sre-foreground); }
+      .bg-card { background-color: var(--sre-card); }
+      .text-card { color: var(--sre-card); }
+      .border-card { border-color: var(--sre-card); }
+      .ring-card { --tw-ring-color: var(--sre-card); }
+      .bg-card-foreground { background-color: var(--sre-card-foreground); }
+      .text-card-foreground { color: var(--sre-card-foreground); }
+      .border-card-foreground { border-color: var(--sre-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--sre-card-foreground); }
+      .bg-popover { background-color: var(--sre-popover); }
+      .text-popover { color: var(--sre-popover); }
+      .border-popover { border-color: var(--sre-popover); }
+      .ring-popover { --tw-ring-color: var(--sre-popover); }
+      .bg-popover-foreground { background-color: var(--sre-popover-foreground); }
+      .text-popover-foreground { color: var(--sre-popover-foreground); }
+      .border-popover-foreground { border-color: var(--sre-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--sre-popover-foreground); }
+      .bg-primary { background-color: var(--sre-primary); }
+      .text-primary { color: var(--sre-primary); }
+      .border-primary { border-color: var(--sre-primary); }
+      .ring-primary { --tw-ring-color: var(--sre-primary); }
+      .bg-primary-foreground { background-color: var(--sre-primary-foreground); }
+      .text-primary-foreground { color: var(--sre-primary-foreground); }
+      .border-primary-foreground { border-color: var(--sre-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--sre-primary-foreground); }
+      .bg-muted { background-color: var(--sre-muted); }
+      .text-muted { color: var(--sre-muted); }
+      .border-muted { border-color: var(--sre-muted); }
+      .ring-muted { --tw-ring-color: var(--sre-muted); }
+      .bg-muted-foreground { background-color: var(--sre-muted-foreground); }
+      .text-muted-foreground { color: var(--sre-muted-foreground); }
+      .border-muted-foreground { border-color: var(--sre-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--sre-muted-foreground); }
+      .bg-border { background-color: var(--sre-border); }
+      .text-border { color: var(--sre-border); }
+      .border-border { border-color: var(--sre-border); }
+      .ring-border { --tw-ring-color: var(--sre-border); }
+      .bg-input { background-color: var(--sre-input); }
+      .text-input { color: var(--sre-input); }
+      .border-input { border-color: var(--sre-input); }
+      .ring-input { --tw-ring-color: var(--sre-input); }
+      .bg-ring { background-color: var(--sre-ring); }
+      .text-ring { color: var(--sre-ring); }
+      .border-ring { border-color: var(--sre-ring); }
+      .ring-ring { --tw-ring-color: var(--sre-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+    <link rel="stylesheet" href="/ui/_dc-common.css">
+    <link rel="stylesheet" href="/ui/_dc-common.css">
+</head>
+<body class="min-h-screen font-sans antialiased">
+<div class="sre-shell">
+  <header class="sre-topbar">
+    <div class="sre-topbar-left">
+      <div class="sre-logo">
+        <span class="sre-logo-mark">SRE</span>
+        <span>AI-SRE</span>
+      </div>
+      <select class="sre-select" aria-label="集群">
+        <option>prod-cluster-01</option>
+        <option>staging-cluster</option>
+      </select>
+    </div>
+    <div class="sre-topbar-right">
+      <input class="sre-search" type="search" placeholder="搜索 Pod / 节点 / Runbook" />
+      <button class="sre-icon-btn" aria-label="通知"><i data-lucide="bell" style="width:16px;height:16px"></i></button>
+      <span class="sre-avatar">OP</span>
+    </div>
+  </header>
+
+  <nav class="sre-sidebar">
+    <a href="dashboard.html" class="sre-nav-item" data-nav-key="dashboard" data-dom-id="nav-dashboard"><i data-lucide="layout-dashboard"></i> 总览</a>
+    <div class="sre-nav-group">
+      <div class="sre-nav-item sre-nav-group-label"><i data-lucide="message-square"></i> 智能助手</div>
+      <div class="sre-nav-sub">
+        <a href="workbench.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="workbench" data-dom-id="nav-workbench">工作台</a>
+        <a href="skillhub.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="skillhub" data-dom-id="nav-skillhub">技能中心</a>
+      </div>
+    </div>
+    <a href="runbooks.html" class="sre-nav-item" data-nav-key="runbooks" data-dom-id="nav-runbooks"><i data-lucide="book-open"></i> Runbook 资料库</a>
+    <a href="health.html" class="sre-nav-item" data-nav-key="health" data-dom-id="nav-health"><i data-lucide="activity"></i> 健康检查</a>
+    <div class="sre-nav-group">
+      <div class="sre-nav-item sre-nav-group-label"><i data-lucide="bar-chart-3"></i> 数据中心</div>
+      <div class="sre-nav-sub">
+        <a href="datacenter.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="datacenter" data-dom-id="nav-datacenter">总览</a>
+        <a href="datacenter-pods.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-pods" data-dom-id="nav-dc-pods">Pod</a>
+        <a href="datacenter-workloads.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-workloads" data-dom-id="nav-dc-workloads">工作负载</a>
+        <a href="datacenter-nodes.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-nodes" data-dom-id="nav-dc-nodes">节点</a>
+        <a href="datacenter-storage.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-storage" data-dom-id="nav-dc-storage" data-active="true">存储</a>
+      </div>
+    </div>
+    <a href="alerts.html" class="sre-nav-item" data-nav-key="alerts" data-dom-id="nav-alerts"><i data-lucide="bell-ring"></i> 告警中心</a>
+    <a href="approvals.html" class="sre-nav-item" data-nav-key="approvals" data-dom-id="nav-approvals"><i data-lucide="shield-check"></i> 审批中心</a>
+    <a href="audit.html" class="sre-nav-item" data-nav-key="audit" data-dom-id="nav-audit"><i data-lucide="clipboard-list"></i> 审计日志</a>
+  </nav>
+
+  <main class="sre-main">
+    <div class="dc-header">
+      <div>
+        <h1 class="sre-section-title" style="margin-bottom:4px">存储</h1>
+        <div class="sre-text-tertiary" id="dc-subtitle">持久卷声明与 StorageClass</div>
+      </div>
+      <div class="dc-controls">
+        <button type="button" id="dc-refresh" class="sre-btn sre-btn-secondary sre-btn-sm"><i data-lucide="refresh-cw" style="width:14px;height:14px"></i> 刷新</button>
+      </div>
+    </div>
+
+    <div id="dc-banner" class="sre-card" style="margin-bottom:16px;padding:14px 20px;display:none"></div>
+
+    <div class="sre-kpi-grid" style="margin-bottom:24px">
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" id="kpi-pvc-total">—</div>
+        <div class="sre-kpi-label">PVC 总数</div>
+        <div class="sre-kpi-delta sre-text-muted">持久卷声明</div>
+      </div>
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" id="kpi-pvc-bound">—</div>
+        <div class="sre-kpi-label">已绑定</div>
+        <div class="sre-kpi-delta sre-text-muted">Bound</div>
+      </div>
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" id="kpi-pvc-bad">—</div>
+        <div class="sre-kpi-label">未绑定</div>
+        <div class="sre-kpi-delta sre-text-muted">Pending / Lost 等</div>
+      </div>
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" id="kpi-pvc-cap">—</div>
+        <div class="sre-kpi-label">申请总容量</div>
+        <div class="sre-kpi-delta sre-text-muted">所有 PVC 之和</div>
+      </div>
+    </div>
+
+    <div class="sre-card dc-panel" style="margin-bottom:24px">
+      <div class="dc-panel-title">持久卷声明</div>
+      <div class="dc-panel-sub">阶段与申请容量</div>
+      <div id="pvc-table"></div>
+    </div>
+
+    <div class="sre-card dc-panel">
+      <div class="dc-panel-title">StorageClass</div>
+      <div class="dc-panel-sub">供应者与回收策略</div>
+      <div id="sc-table"></div>
+    </div>
+
+    <div class="dc-foot">
+      <span class="sre-text-tertiary" id="dc-checked-at"></span>
+      <span class="sre-text-tertiary" id="dc-prom-url"></span>
+    </div>
+  </main>
+</div>
+
+    <script>lucide.createIcons();</script>
+
+    <style>
+  .sre-shell { display: flex; min-height: 100vh; background: var(--sre-background); color: var(--sre-foreground); font-family: var(--sre-font-sans); }
+  .sre-topbar { position: fixed; inset: 0 0 auto 0; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--sre-surface); border-bottom: 1px solid var(--sre-line); z-index: 50; }
+  .sre-topbar-left, .sre-topbar-right { display: flex; align-items: center; gap: 16px; }
+  .sre-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -0.02em; }
+  .sre-logo-mark { width: 28px; height: 28px; border-radius: var(--sre-radius-medium); background: var(--sre-primary); color: var(--sre-primary-foreground); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .sre-select { height: 32px; padding: 0 28px 0 12px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 13px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+  .sre-search { width: 240px; height: 32px; padding: 0 12px 0 32px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 13px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 10px center; }
+  .sre-icon-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--sre-radius-medium); background: transparent; border: 1px solid var(--sre-border); color: var(--sre-muted-foreground); cursor: pointer; }
+  .sre-avatar { width: 30px; height: 30px; border-radius: 9999px; background: var(--sre-surface-3); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; color: var(--sre-muted-foreground); border: 1px solid var(--sre-border); }
+  .sre-sidebar { position: fixed; top: 56px; left: 0; bottom: 0; width: 220px; padding: 16px 12px; background: var(--sre-surface); border-right: 1px solid var(--sre-line); display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+  .sre-nav-item { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-radius: var(--sre-radius-medium); color: var(--sre-muted-foreground); font-size: 14px; text-decoration: none; transition: background 120ms ease, color 120ms ease; }
+  .sre-nav-item:hover { background: var(--sre-surface-2); color: var(--sre-foreground); }
+  .sre-nav-item[data-active="true"] { background: var(--sre-primary-subtle); color: var(--sre-primary); }
+  .sre-nav-item i { width: 18px; height: 18px; }
+  .sre-nav-group { display: flex; flex-direction: column; }
+  .sre-nav-group-label { cursor: default; }
+  .sre-nav-group-label:hover { background: transparent; color: var(--sre-muted-foreground); }
+  .sre-nav-sub { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 6px 9px; padding-left: 16px; border-left: 1px solid var(--sre-border); }
+  .sre-nav-sub-item { height: 34px; font-size: 13px; padding-left: 10px; }
+  .sre-main { margin-left: 220px; margin-top: 56px; min-height: calc(100vh - 56px); padding: 24px; flex: 1 1 auto; min-width: 0; }
+  .sre-card { background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); }
+  .sre-section-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; }
+  .sre-kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .sre-kpi { padding: 20px; }
+  .sre-kpi-value { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .sre-kpi-label { font-size: 13px; color: var(--sre-muted-foreground); margin-top: 6px; }
+  .sre-kpi-delta { font-size: 12px; margin-top: 8px; }
+  .sre-list { display: flex; flex-direction: column; }
+  .sre-list-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--sre-border); gap: 12px; }
+  .sre-list-row:last-child { border-bottom: none; }
+  .sre-list-meta { font-size: 13px; color: var(--sre-muted-foreground); }
+  .sre-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--sre-radius-medium); font-size: 12px; font-weight: 600; }
+  .sre-badge-error { background: var(--sre-state-error-subtle); color: var(--sre-state-error); }
+  .sre-badge-warning { background: var(--sre-state-warning-subtle); color: var(--sre-state-warning); }
+  .sre-badge-success { background: var(--sre-state-success-subtle); color: var(--sre-state-success); }
+  .sre-badge-info { background: var(--sre-state-info-subtle); color: var(--sre-state-info); }
+  .sre-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: var(--sre-radius-medium); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 120ms ease; }
+  .sre-btn-primary { background: var(--sre-primary); color: var(--sre-primary-foreground); }
+  .sre-btn-primary:hover { background: var(--sre-primary-hover); }
+  .sre-btn-secondary { background: var(--sre-surface-2); color: var(--sre-foreground); border: 1px solid var(--sre-border); }
+  .sre-btn-secondary:hover { background: var(--sre-surface-3); }
+  .sre-btn-sm { height: 30px; padding: 0 12px; font-size: 13px; }
+  .sre-input { height: 40px; padding: 0 12px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 14px; }
+  .sre-text-muted { color: var(--sre-muted-foreground); }
+  .sre-text-tertiary { color: var(--sre-muted-foreground); font-size: 13px; }
+  .sre-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .sre-table th, .sre-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--sre-border); }
+  .sre-table th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sre-muted-foreground); font-weight: 600; }
+  .sre-table tr:last-child td { border-bottom: none; }
+  .sre-empty { padding: 48px; text-align: center; color: var(--sre-muted-foreground); }
+  .sre-status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+  .sre-status-pass { background: var(--sre-state-success); }
+  .sre-status-warn { background: var(--sre-state-warning); }
+  .sre-status-fail { background: var(--sre-state-error); }
+  .sre-health-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .sre-health-card { padding: 20px; }
+  .sre-health-score { font-size: 36px; font-weight: 700; }
+  .sre-check-list { display: flex; flex-direction: column; }
+  .sre-check-row { display: grid; grid-template-columns: 2fr 1fr 1fr 100px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--sre-border); gap: 12px; font-size: 14px; }
+  .sre-check-row:last-child { border-bottom: none; }
+  .sre-check-name { font-weight: 600; }
+  .sre-panel { background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); margin-bottom: 16px; overflow: hidden; }
+  .sre-panel-head { padding: 14px 20px; border-bottom: 1px solid var(--sre-border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .sre-panel-title { font-size: 15px; font-weight: 600; }
+  .sre-panel-body { padding: 6px 20px; }
+  .sre-kv-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--sre-border); font-size: 14px; }
+  .sre-kv-row:last-child { border-bottom: none; }
+  .sre-kv-name { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sre-kv-meta { font-size: 13px; color: var(--sre-muted-foreground); min-width: 0; }
+  .sre-bar-track { height: 8px; border-radius: 9999px; background: var(--sre-surface-3); overflow: hidden; flex: 1 1 auto; min-width: 80px; }
+  .sre-bar { height: 100%; border-radius: 9999px; background: var(--sre-primary); }
+  .sre-bar-warn { background: var(--sre-state-warning); }
+  .sre-bar-err { background: var(--sre-state-error); }
+  .sre-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+  .sre-conn-ok { background: var(--sre-state-success-subtle); color: var(--sre-state-success); }
+  .sre-conn-warn { background: var(--sre-state-warning-subtle); color: var(--sre-state-warning); }
+  .sre-conn-err { background: var(--sre-state-error-subtle); color: var(--sre-state-error); }
+  @media (max-width: 900px) { .sre-grid-2 { grid-template-columns: 1fr; } }
+</style>
+
+<script src="/ui/_dc-common.js"></script>
+<script>
+(function () {
+  'use strict';
+  var D = window.DCC, $ = D.$;
+
+  function render(d, ctx) {
+    if (!d.connected) {
+      ctx.banner(d, '');
+      ['kpi-pvc-total','kpi-pvc-bound','kpi-pvc-bad','kpi-pvc-cap'].forEach(function (id) { $(id).textContent = '—'; });
+      ['pvc-table','sc-table'].forEach(function (id) { $(id).innerHTML = ''; });
+      return;
+    }
+    var pvcs = d.pvcs || [], scs = d.storage_classes || [], s = d.summary || {};
+    var cap = pvcs.reduce(function (a, r) { return a + (r.requested_bytes || 0); }, 0);
+
+    $('kpi-pvc-total').textContent = s.total;
+    $('kpi-pvc-bound').textContent = s.bound;
+    $('kpi-pvc-bad').textContent = s.not_bound;
+    $('kpi-pvc-bad').style.color = s.not_bound > 0 ? 'var(--sre-state-error)' : '';
+    $('kpi-pvc-cap').textContent = cap ? D.fmtBytes(cap) : '—';
+    ctx.banner(d, s.total + ' 个 PVC，' + s.bound + ' 个已绑定');
+
+    D.table($('pvc-table'), [
+      { title: '状态', render: function (r) {
+          // Bound is the only phase that is not a problem; everything else
+          // (Pending, Lost) means a volume the workload cannot use.
+          return D.badge(r.phase === 'Bound' ? 'success' : 'error', r.phase);
+        } },
+      { title: '命名空间', render: function (r) { return D.esc(r.namespace); } },
+      { title: '名称', render: function (r) { return D.esc(r.name); },
+        cellStyle: 'font-family:var(--sre-font-mono);font-size:13px' },
+      { title: 'StorageClass', render: function (r) { return D.esc(r.storage_class || '—'); } },
+      { title: '申请容量', render: function (r) {
+          return D.esc(r.requested_bytes === null || r.requested_bytes === undefined
+            ? '—' : D.fmtBytes(r.requested_bytes));
+        }, cellStyle: 'text-align:right' }
+    ], pvcs, { emptyText: '没有 PersistentVolumeClaim' });
+
+    D.table($('sc-table'), [
+      { title: '名称', render: function (r) { return D.esc(r.name); },
+        cellStyle: 'font-family:var(--sre-font-mono);font-size:13px' },
+      { title: 'Provisioner', render: function (r) { return D.esc(r.provisioner); } },
+      { title: '回收策略', render: function (r) { return D.esc(r.reclaim_policy); } },
+      { title: '绑定模式', render: function (r) { return D.esc(r.binding_mode); } }
+    ], scs, { emptyText: '没有 StorageClass' });
+  }
+
+  D.boot({ url: function () { return '/api/ui/datacenter/storage'; }, render: render });
+})();
+</script>
+  <script src="/ui/_sre-alerts.js"></script>
+</body>
+</html>

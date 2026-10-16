@@ -1,0 +1,302 @@
+[
+  {
+    "action": "patch",
+    "kind": "Deployment",
+    "name": "ad",
+    "namespace": "test-agent",
+    "before": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "ad",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ad",
+          "app.kubernetes.io/part-of": "opentelemetry-demo",
+          "app.kubernetes.io/version": "3.1.0",
+          "helm.sh/chart": "opentelemetry-demo-0.42.3",
+          "opentelemetry.io/name": "ad"
+        },
+        "name": "ad",
+        "namespace": "test-agent"
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "opentelemetry.io/name": "ad"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "annotations": {
+              "resource.opentelemetry.io/service.namespace": "opentelemetry-demo"
+            },
+            "labels": {
+              "app.kubernetes.io/component": "ad",
+              "app.kubernetes.io/name": "ad",
+              "app.kubernetes.io/version": "3.1.0",
+              "opentelemetry.io/name": "ad"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "OTEL_SERVICE_NAME",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.labels['app.kubernetes.io/component']"
+                      }
+                    }
+                  },
+                  {
+                    "name": "OTEL_COLLECTOR_NAME",
+                    "value": "otel-collector"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE",
+                    "value": "cumulative"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_DEFAULT_HISTOGRAM_AGGREGATION",
+                    "value": "explicit_bucket_histogram"
+                  },
+                  {
+                    "name": "AD_PORT",
+                    "value": "8080"
+                  },
+                  {
+                    "name": "AD_PROMETHEUS_PORT",
+                    "value": "9465"
+                  },
+                  {
+                    "name": "FLAGD_HOST",
+                    "value": "flagd"
+                  },
+                  {
+                    "name": "FLAGD_PORT",
+                    "value": "8013"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+                    "value": "http://$(OTEL_COLLECTOR_NAME):4318"
+                  },
+                  {
+                    "name": "OTEL_LOGS_EXPORTER",
+                    "value": "otlp"
+                  },
+                  {
+                    "name": "OTEL_EXPERIMENTAL_SDK_TELEMETRY_VERSION",
+                    "value": "latest"
+                  },
+                  {
+                    "name": "OTEL_RESOURCE_ATTRIBUTES",
+                    "value": "service.version=3.1.0,service.criticality=medium"
+                  }
+                ],
+                "image": "ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-ad",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "ad",
+                "ports": [
+                  {
+                    "containerPort": 9465,
+                    "name": "prometheus",
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 8080,
+                    "name": "service",
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "limits": {
+                    "memory": "300Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "otel-demo",
+            "serviceAccountName": "otel-demo",
+            "terminationGracePeriodSeconds": 30
+          }
+        }
+      }
+    }
+  },
+  {
+    "action": "patch",
+    "kind": "Deployment",
+    "name": "cart",
+    "namespace": "test-agent",
+    "before": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "cart",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "cart",
+          "app.kubernetes.io/part-of": "opentelemetry-demo",
+          "app.kubernetes.io/version": "3.1.0",
+          "helm.sh/chart": "opentelemetry-demo-0.42.3",
+          "opentelemetry.io/name": "cart"
+        },
+        "name": "cart",
+        "namespace": "test-agent"
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "opentelemetry.io/name": "cart"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "annotations": {
+              "resource.opentelemetry.io/service.namespace": "opentelemetry-demo"
+            },
+            "labels": {
+              "app.kubernetes.io/component": "cart",
+              "app.kubernetes.io/name": "cart",
+              "app.kubernetes.io/version": "3.1.0",
+              "opentelemetry.io/name": "cart"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "OTEL_SERVICE_NAME",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.labels['app.kubernetes.io/component']"
+                      }
+                    }
+                  },
+                  {
+                    "name": "OTEL_COLLECTOR_NAME",
+                    "value": "otel-collector"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE",
+                    "value": "cumulative"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_DEFAULT_HISTOGRAM_AGGREGATION",
+                    "value": "explicit_bucket_histogram"
+                  },
+                  {
+                    "name": "CART_PORT",
+                    "value": "8080"
+                  },
+                  {
+                    "name": "ASPNETCORE_URLS",
+                    "value": "http://*:$(CART_PORT)"
+                  },
+                  {
+                    "name": "VALKEY_ADDR",
+                    "value": "valkey-cart:6379"
+                  },
+                  {
+                    "name": "FLAGD_HOST",
+                    "value": "flagd"
+                  },
+                  {
+                    "name": "FLAGD_PORT",
+                    "value": "8013"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+                    "value": "http://$(OTEL_COLLECTOR_NAME):4317"
+                  },
+                  {
+                    "name": "OPAMP_SERVER_ENDPOINT",
+                    "value": "ws://opamp-server:4320/v1/opamp"
+                  },
+                  {
+                    "name": "OPAMP_SERVER_TLS_INSECURE_SKIP_VERIFY",
+                    "value": "false"
+                  },
+                  {
+                    "name": "OTEL_RESOURCE_ATTRIBUTES",
+                    "value": "service.version=3.1.0,service.criticality=high"
+                  }
+                ],
+                "image": "ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-cart",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "cart",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "service",
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "limits": {
+                    "memory": "160Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "initContainers": [
+              {
+                "command": [
+                  "sh",
+                  "-c",
+                  "until nc -z -v -w30 valkey-cart 6379; do echo waiting for valkey-cart; sleep 2; done;"
+                ],
+                "image": "busybox:latest",
+                "imagePullPolicy": "Always",
+                "name": "wait-for-valkey-cart",
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "otel-demo",
+            "serviceAccountName": "otel-demo",
+            "terminationGracePeriodSeconds": 30
+          }
+        }
+      }
+    }
+  }
+]

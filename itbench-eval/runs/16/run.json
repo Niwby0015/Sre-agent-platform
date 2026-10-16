@@ -1,0 +1,36 @@
+{
+  "scenario_id": "16",
+  "namespace": "test-agent",
+  "task": "The `shipping` service in namespace `test-agent` is failing \u2014 callers report errors. Find the root cause and restore service.",
+  "model": "claude-sonnet-4-6",
+  "subagent_model": "claude-haiku-4-5",
+  "hitl_enabled": false,
+  "timeout_seconds": 300,
+  "started_at": "2026-10-16T06:56:10.055293+00:00",
+  "env": {
+    "HITL_ENABLED": "false",
+    "AGENT_RECURSION_LIMIT": "1000",
+    "DATABASE_URL": "",
+    "PROMETHEUS_URL": "http://10.97.161.150:9090",
+    "proxies_dropped": "ALL_PROXY, all_proxy, HTTP_PROXY, http_proxy, HTTPS_PROXY, https_proxy"
+  },
+  "kubeconfig": "/root/.kube/test-agent-eval.kubeconfig",
+  "sandbox": "/tmp/sre-eval-16-p5ab05ox",
+  "finished_at": "2026-10-16T06:59:37.287247+00:00",
+  "elapsed_seconds": 207.2,
+  "run_status": "finished",
+  "error": null,
+  "stats": {
+    "messages": 66,
+    "model_calls": 18,
+    "tool_calls": 47,
+    "tool_results": 47,
+    "input_tokens": 695920,
+    "output_tokens": 19284,
+    "steps": 76,
+    "auto_approvals": 0
+  },
+  "verdict": "COMPLETE",
+  "verdict_reason": "target objects match pre-fault and are serving",
+  "agent_claims_resolved": "True"
+}

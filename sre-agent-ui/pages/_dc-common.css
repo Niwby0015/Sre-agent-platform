@@ -1,0 +1,65 @@
+/* Data-centre page styles, shared by /ui/datacenter*.html.
+ *
+ * Loaded as a plain stylesheet rather than inlined per page so the five
+ * data-centre pages cannot drift apart. The sre-* component styles these
+ * build on live in each page's own <style> block, following the convention
+ * the other console pages already use.
+ */
+
+  /* --- page chrome ---------------------------------------------------- */
+  .dc-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
+  .dc-controls { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .dc-foot { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:12px; }
+  .dc-panel { padding:20px; }
+  .dc-panel-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .dc-panel-title { font-size:15px; font-weight:600; }
+  .dc-panel-sub { font-size:12px; color:var(--sre-muted-foreground); margin-top:2px; margin-bottom:12px; }
+  .dc-grid-2 { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:16px; margin-bottom:24px; }
+  @media (max-width:1100px) { .dc-grid-2 { grid-template-columns:1fr; } }
+
+  /* Range selector - one row of filters above the charts, not sprinkled
+     between them. */
+  .dc-range { display:inline-flex; background:var(--sre-surface-2); border:1px solid var(--sre-border); border-radius:var(--sre-radius-medium); padding:2px; }
+  .dc-range button { border:none; background:transparent; color:var(--sre-muted-foreground); font-family:inherit; font-size:13px; padding:4px 10px; border-radius:6px; cursor:pointer; }
+  .dc-range button:hover { color:var(--sre-foreground); }
+  .dc-range button[data-active="true"] { background:var(--sre-card); color:var(--sre-foreground); font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+
+  /* Legend for a single series - the title names the measure, this names the
+     mark. Kept as a swatch + word so identity is never colour-alone. */
+  .dc-legend { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--sre-muted-foreground); white-space:nowrap; }
+  .dc-legend-swatch { width:10px; height:10px; border-radius:3px; display:inline-block; }
+
+  /* Meter: same-ramp track so the fill reads as "part of" the track. */
+  .dc-meter { height:6px; border-radius:3px; background:var(--sre-surface-3); overflow:hidden; margin:10px 0 2px; }
+  .dc-meter-fill { height:100%; border-radius:3px; transition:width 240ms ease; }
+
+  /* Bars: 4px rounded data-end, flat at the zero baseline; the 10px row gap
+     keeps fills from touching. */
+  .dc-bars { display:flex; flex-direction:column; gap:10px; }
+  .dc-bar-row { display:grid; grid-template-columns:minmax(0,150px) minmax(0,1fr) 62px; align-items:center; gap:10px; }
+  .dc-bar-name { font-size:12px; color:var(--sre-muted-foreground); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:var(--sre-font-mono); }
+  .dc-bar-track { height:16px; background:var(--sre-surface-2); border-radius:4px; overflow:hidden; }
+  .dc-bar-fill { height:100%; border-radius:0 4px 4px 0; transition:width 240ms ease; }
+  .dc-bar-value { font-size:12px; text-align:right; font-variant-numeric:tabular-nums; color:var(--sre-foreground); }
+
+  /* Quota meters: the track is the limit, the fill is what is used. */
+  .dc-quota-head { font-size:13px; font-weight:600; color:var(--sre-muted-foreground); margin-bottom:12px; }
+  .dc-quota-row { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(56px,1fr) auto auto; align-items:center; gap:10px; margin-bottom:2px; padding:5px 0; }
+  .dc-quota-name { font-size:12px; font-family:var(--sre-font-mono); color:var(--sre-muted-foreground); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .dc-quota-val { font-size:12px; font-variant-numeric:tabular-nums; color:var(--sre-foreground); white-space:nowrap; }
+  .dc-quota-pct { font-size:12px; font-variant-numeric:tabular-nums; text-align:right; min-width:46px; color:var(--sre-muted-foreground); }
+  /* Over threshold the number itself goes bold and coloured, so the state is
+     readable without relying on the fill colour alone. */
+  .dc-quota-pct[data-level="warn"] { color:var(--sre-state-warning); font-weight:700; }
+  .dc-quota-pct[data-level="crit"] { color:var(--sre-state-error); font-weight:700; }
+  .dc-quota-empty { font-size:12px; color:var(--sre-muted-foreground); padding:6px 0; }
+  .dc-quota-note { margin-top:16px; padding-top:14px; border-top:1px solid var(--sre-border); font-size:12px; line-height:1.75; color:var(--sre-muted-foreground); }
+  .dc-quota-note b { color:var(--sre-foreground); }
+  .dc-quota-note .warn { color:var(--sre-state-warning); font-weight:600; }
+
+  /* Chart tooltip */
+  .dc-chart { position:relative; }
+  .dc-tip { position:absolute; pointer-events:none; opacity:0; transition:opacity 100ms ease; background:var(--sre-card); border:1px solid var(--sre-border); border-radius:var(--sre-radius-medium); padding:8px 10px; font-size:12px; line-height:1.5; white-space:nowrap; box-shadow:0 6px 16px rgba(0,0,0,.12); z-index:20; }
+  .dc-tip[data-show="true"] { opacity:1; }
+  .dc-tip-v { font-weight:700; font-variant-numeric:tabular-nums; }
+  .dc-tip-t { color:var(--sre-muted-foreground); }

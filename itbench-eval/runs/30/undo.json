@@ -1,0 +1,102 @@
+[
+  {
+    "action": "patch",
+    "kind": "Service",
+    "name": "ad",
+    "namespace": "test-agent",
+    "before": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "ad",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ad",
+          "app.kubernetes.io/part-of": "opentelemetry-demo",
+          "app.kubernetes.io/version": "3.1.0",
+          "helm.sh/chart": "opentelemetry-demo-0.42.3",
+          "opentelemetry.io/name": "ad"
+        },
+        "name": "ad",
+        "namespace": "test-agent"
+      },
+      "spec": {
+        "clusterIP": "10.105.201.184",
+        "clusterIPs": [
+          "10.105.201.184"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "prometheus",
+            "port": 9465,
+            "protocol": "TCP",
+            "targetPort": 9465
+          },
+          {
+            "name": "tcp-service",
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "opentelemetry.io/name": "ad"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      }
+    },
+    "pristine": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "ad",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "ad",
+          "app.kubernetes.io/part-of": "opentelemetry-demo",
+          "app.kubernetes.io/version": "3.1.0",
+          "helm.sh/chart": "opentelemetry-demo-0.42.3",
+          "opentelemetry.io/name": "ad"
+        },
+        "name": "ad",
+        "namespace": "test-agent"
+      },
+      "spec": {
+        "clusterIP": "10.105.201.184",
+        "clusterIPs": [
+          "10.105.201.184"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "prometheus",
+            "port": 9465,
+            "protocol": "TCP",
+            "targetPort": 9465
+          },
+          {
+            "name": "tcp-service",
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "opentelemetry.io/name": "ad"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      }
+    }
+  }
+]

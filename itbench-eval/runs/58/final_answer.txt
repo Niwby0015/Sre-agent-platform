@@ -1,0 +1,40 @@
+
+Verification is complete. Here is what I found and did.
+
+## Root cause
+
+**`Deployment/accounting` in `test-agent` had been scaled to `spec.replicas: 0`** — the last event on the namespace was `ScalingReplicaSet … Scaled down replica set accounting-6565bd7bfd to 0 from 1`, and the namespace contained a `Completed` accounting pod with **no running accounting container**. Nothing else about the workload was wrong: the image (`…demo:3.1.0-accounting`), the `wait-for-kafka` init gate, and the `160Mi` memory limits were all correct and the previous pod had run cleanly for 17h before it was scaled away.
+
+## Repair
+
+Delegated a single mutation: `scale deployment/accounting --replicas=1` (per approval). New pod `accounting-6565bd7bfd-6k9xp` was created by the existing ReplicaSet — image was already present, init container passed, main container started.
+
+## Verification (re-read after the change)
+
+- `Deployment/accounting`: **DESIRED 1 / READY 1 / UP-TO-DATE 1 / AVAILABLE 1**, condition `Available: True` (was `0/0/0/0`, `Available: False`).
+- `Pod/accounting-6565bd7bfd-6k9xp`: **Running, Ready=True, 0 restarts**, no Warning events (earlier it was stuck in `PodInitializing`).
+- **Functional check**: the accounting logs show it connecting to `kafka:9092` and consuming real order events, including orders `e21220e7…` and `e8ea24f5…` placed *after* the restore — the exact `demo.order.id`s the frontend logged as "Order placed successfully".
+- Caller path: frontend logs show **every** `/api/*` request, including **`POST /api/checkout` → 200**, with **zero non-200 responses** in the recent window; endpoint audit shows **no service with 0 ready endpoints** and **no selector mismatches**. The 503s visible in the load-generator's browser console are stale output from the earlier phase (frontend/payment/checkout/valkey-cart were recreated 16–40 min ago) — no backend is currently emitting 5xx.
+
+Two things I deliberately did *not* "fix", because the evidence says they are by design rather than faults:
+- `accounting` and `fraud-detection` have no `Service`. In this demo build (chart 0.42.3 / app 3.1.0) both are Kafka consumers with no inbound port — checkout still places orders successfully (200) with no `fraud-detection` Service, so checkout does not resolve those names. Their absence is expected, and no other service is missing from the chart's Service set.
+- The otel-collector's `no such host` errors for `opensearch`/`prometheus`/`jaeger` match the Helm values, which explicitly disable those backends (`opensearch.enabled=false`, `prometheus.enabled=false`, `jaeger.enabled=false`).
+
+```json
+{
+  "root_cause": "Deployment/accounting in namespace test-agent had been scaled down to spec.replicas=0, leaving no accounting container running (desired=0, ready=0, available=0).",
+  "evidence": [
+    "kubectl_get_deployments showed accounting DESIRED 0 / READY 0 / UP-TO-DATE 0 / AVAILABLE 0 while every sibling deployment was 1/1/1/1",
+    "Namespace events ended with 'ScalingReplicaSet Deployment/accounting Scaled down replica set accounting-6565bd7bfd to 0 from 1' preceded by 'Killing Pod/accounting-6565bd7bfd-rnn5h Stopping container accounting'",
+    "kubectl_get_pods listed accounting-6565bd7bfd-rnn5h as 'Completed' with no running accounting pod; no ReplicaSet was producing a replacement",
+    "Deployment spec showed nothing else wrong: correct image ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-accounting, limits memory 160Mi, Progressing True",
+    "No ResourceQuota or LimitRange in the namespace, so nothing else blocked the scale-up",
+    "Load-generator/ frontend evidence showed caller-visible errors (503s, 'Order placed successfully' gaps) while accounting was absent"
+  ],
+  "actions": [
+    {"tool": "task(change-executor) -> scale deployment/accounting --replicas=1", "target": "deployment/accounting", "result": "applied"}
+  ],
+  "verification": "Re-read Deployment/accounting: 1 desired / 1 ready / 1 up-to-date / 1 available, condition Available: True. Re-read Pod/accounting-6565bd7bfd-6k9xp: Phase Running, Ready=True, Initialized=True, 0 restarts, only Normal events (pulled image, wait-for-kafka init, started accounting). Pod logs show 'Accounting service started', 'Connecting to Kafka: kafka:9092' and continuous 'Order details: {...}' consumption of orders e21220e7-... and e8ea24f5-... that the frontend logged as placed after the fix. kubectl_get_events (warning_only) shows no events for accounting. kubectl_get_endpoints shows every service with 1 ready / 0 not-ready endpoints and the selector-mismatch audit returned none, while frontend logs show POST /api/checkout returning 200 with zero non-200 responses.",
+  "resolved": true
+}
+```

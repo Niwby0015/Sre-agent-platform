@@ -1,0 +1,11 @@
+# Every change to this repository requires review from the code owner below.
+#
+# Enforced by the "Require reviewed PRs into main" repository ruleset, which
+# requires 1 approving review AND that the review come from a code owner.
+# Without this file, `require_code_owner_review` is a no-op and any single
+# approval from any of the repo's admins would satisfy the rule.
+#
+# This file is itself covered by the `*` pattern, so a PR that removes or
+# changes the owner list needs the current owner's approval to merge.
+
+* @ericjohanson-langchain

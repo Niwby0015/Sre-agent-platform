@@ -1,0 +1,6 @@
+# 图片按二进制处理：禁止行尾转换，并让 git diff 显示图像差异
+*.png  binary  diff=imgdiff
+*.jpg  binary  diff=imgdiff
+*.jpeg binary  diff=imgdiff
+*.gif  binary  diff=imgdiff
+*.svg  text    eol=lf

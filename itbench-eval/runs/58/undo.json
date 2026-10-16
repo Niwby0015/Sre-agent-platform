@@ -1,0 +1,140 @@
+[
+  {
+    "action": "patch",
+    "kind": "Deployment",
+    "name": "accounting",
+    "namespace": "test-agent",
+    "before": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "accounting",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "accounting",
+          "app.kubernetes.io/part-of": "opentelemetry-demo",
+          "app.kubernetes.io/version": "3.1.0",
+          "helm.sh/chart": "opentelemetry-demo-0.42.3",
+          "opentelemetry.io/name": "accounting"
+        },
+        "name": "accounting",
+        "namespace": "test-agent"
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "opentelemetry.io/name": "accounting"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "annotations": {
+              "resource.opentelemetry.io/service.namespace": "opentelemetry-demo"
+            },
+            "labels": {
+              "app.kubernetes.io/component": "accounting",
+              "app.kubernetes.io/name": "accounting",
+              "app.kubernetes.io/version": "3.1.0",
+              "opentelemetry.io/name": "accounting"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "OTEL_SERVICE_NAME",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.labels['app.kubernetes.io/component']"
+                      }
+                    }
+                  },
+                  {
+                    "name": "OTEL_COLLECTOR_NAME",
+                    "value": "otel-collector"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE",
+                    "value": "cumulative"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_DEFAULT_HISTOGRAM_AGGREGATION",
+                    "value": "explicit_bucket_histogram"
+                  },
+                  {
+                    "name": "KAFKA_ADDR",
+                    "value": "kafka:9092"
+                  },
+                  {
+                    "name": "KAFKA_TOPIC",
+                    "value": "orders"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+                    "value": "http://$(OTEL_COLLECTOR_NAME):4318"
+                  },
+                  {
+                    "name": "DB_CONNECTION_STRING",
+                    "value": "Host=astronomy-db;Username=astronomy_user;Password=astronomy_password;Database=astronomy_db"
+                  },
+                  {
+                    "name": "OTEL_DOTNET_AUTO_TRACES_ENTITYFRAMEWORKCORE_INSTRUMENTATION_ENABLED",
+                    "value": "false"
+                  },
+                  {
+                    "name": "OTEL_RESOURCE_ATTRIBUTES",
+                    "value": "service.version=3.1.0,service.criticality=low"
+                  }
+                ],
+                "image": "ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-accounting",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "accounting",
+                "resources": {
+                  "limits": {
+                    "memory": "160Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "initContainers": [
+              {
+                "command": [
+                  "sh",
+                  "-c",
+                  "until nc -z -v -w30 kafka 9092; do echo waiting for kafka; sleep 2; done;"
+                ],
+                "image": "busybox:latest",
+                "imagePullPolicy": "Always",
+                "name": "wait-for-kafka",
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "otel-demo",
+            "serviceAccountName": "otel-demo",
+            "terminationGracePeriodSeconds": 30
+          }
+        }
+      }
+    }
+  }
+]

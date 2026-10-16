@@ -1,0 +1,40 @@
+
+Service is restored and verified. Summary:
+
+**Root cause:** The running `valkey-cart` process had its maxmemory lowered at runtime — at 04:13:40 UTC a one-off Job (`valkey-cart-init`, created 04:13:27, container `valkey-cli`, pod logs `OK\nOK\n`) issued `CONFIG SET maxmemory 1048576` (1 MiB) on the live server. The valkey log recorded it verbatim: `WARNING: the new maxmemory value set via CONFIG SET (1048576) is smaller than the current memory usage (1408632)`. With the effective policy non-evicting, valkey rejected every write with `OOM command not allowed when used memory > 'maxmemory'`, which the cart service surfaced as `FailedPrecondition: Can't access cart storage` and the frontend as HTTP 500 on `POST /api/cart`. Reads kept returning 200, which is why the workload still looked "Running" and the endpoint was "ready".
+
+**Why the spec was not the fault:** the same pod template had been serving successful writes (RDB saves every 300s, "100 changes") for 17h, and the server itself logged the change as arriving "via CONFIG SET", not from startup configuration. The override existed only in the running process, so recreating the pod from the unchanged Deployment restored the declared configuration.
+
+**Fix applied (one change):** `change-executor` performed a rollout restart of `deployment/valkey-cart`; old pod `valkey-cart-6d56fb7ccc-zw2kb` was replaced by `valkey-cart-8bd97844d-z69jw`.
+
+**Verification (re-read after the change):**
+- New valkey pod: `Phase: Running`, `Ready/ContainersReady: True`, 0 restarts; log `Ready to accept connections tcp`; Deployment `1/1 ready/available`.
+- `valkey-cart` Service endpoint: `1 ready / 0 not-ready`.
+- Cart service logs: continuous `AddItemAsync`/`GetCartAsync`/`EmptyCartAsync` with **no** `FailedPrecondition` error lines (previously the dominant symptom).
+- Frontend logs: `POST /api/cart` now `http.response.status_code: 200` (it was 500 with the OOM stack trace before).
+- Warning events: no new warnings; the only ones are stale `FailedScheduling` entries for other pods.
+
+Note (not changed): the valkey container runs with no maxmemory/eviction args declared, under a 20Mi memory limit. That is the pre-existing chart state and unrelated to this incident; adding `--maxmemory 20mb --maxmemory-policy allkeys-lru` would be a reasonable future hardening but was out of scope for the smallest fix.
+
+```json
+{
+  "root_cause": "The valkey-cart store's maxmemory was lowered at runtime to 1048576 bytes (1 MiB) by a one-off valkey-cli Job, dropping below its ~1.34 MiB working set so that with a non-evicting policy all writes were rejected with 'OOM command not allowed when used memory > maxmemory'.",
+  "evidence": [
+    "valkey-cart-6d56fb7ccc-zw2kb log 04:13:40: 'WARNING: the new maxmemory value set via CONFIG SET (1048576) is smaller than the current memory usage (1408632). This will result in key eviction and/or the inability to accept new write commands depending on the maxmemory-policy.'",
+    "Job valkey-cart-init created 04:13:27 (container valkey-cli, image docker.io/valkey/valkey:9.1.2-alpine3.24), completed ~04:13:40 with two 'OK' responses on stdout; its pod is now gone, no CronJob or DaemonSet exists to re-apply the change.",
+    "cart-868994bb8-bc69g logs: 'Error status code FailedPrecondition with detail Can't access cart storage. StackExchange.Redis.RedisServerException: OOM command not allowed when used memory > maxmemory at cartstore/ValkeyCartStore.cs:line 165'.",
+    "frontend-6f68f54c79-ldf4f log 04:14:02: POST /api/cart returned http.response.status_code 500 with the same OOM stack trace.",
+    "Writes had been healthy on the same pod template for 17h before the change (RDB '100 changes in 300 seconds' saves every ~5 min up to 04:08:54) and the server attributed the low limit to CONFIG SET, not to startup configuration — so the Deployment spec was not the fault.",
+    "Pod/Deployment/Service all reported healthy (Running, 1/1 ready, endpoint ready), confirming the symptom was not a crash, readiness or selector failure."
+  ],
+  "actions": [
+    {
+      "tool": "change-executor",
+      "target": "deployment/valkey-cart",
+      "result": "applied"
+    }
+  ],
+  "verification": "Re-read after the change: new pod valkey-cart-8bd97844d-z69jw is Running/Ready with 0 restarts and logs 'Ready to accept connections tcp'; deployment valkey-cart is 1/1 ready/available; Service valkey-cart shows 1 ready / 0 not-ready endpoints; cart-868994bb8-bc69g logs show continuous AddItemAsync/GetCartAsync/EmptyCartAsync with no FailedPrecondition 'OOM' errors; frontend logs show POST /api/cart returning 200 (previously 500); kubectl_get_events --warning-only shows no new warnings for valkey-cart.",
+  "resolved": true
+}
+```

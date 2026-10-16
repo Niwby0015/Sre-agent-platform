@@ -1,0 +1,10 @@
+{
+  "run_status": "killed",
+  "elapsed_seconds": 345,
+  "stats": {
+    "tool_calls": 64
+  },
+  "verdict": "FAIL",
+  "verdict_reason": "Deployment/payment still differs from pre-fault in: affinity",
+  "agent_claims_resolved": "unknown"
+}

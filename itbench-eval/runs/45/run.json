@@ -1,0 +1,33 @@
+{
+  "scenario_id": "45",
+  "namespace": "test-agent",
+  "task": "The `email` service in namespace `test-agent` is failing \u2014 callers report errors. Find the root cause and restore service.",
+  "model": "claude-sonnet-4-6",
+  "subagent_model": "claude-haiku-4-5",
+  "hitl_enabled": false,
+  "timeout_seconds": 300,
+  "started_at": "2026-10-16T05:00:04.331323+00:00",
+  "env": {
+    "HITL_ENABLED": "false",
+    "DATABASE_URL": "",
+    "PROMETHEUS_URL": "http://10.97.161.150:9090",
+    "proxies_dropped": "ALL_PROXY, all_proxy, HTTP_PROXY, http_proxy, HTTPS_PROXY, https_proxy"
+  },
+  "kubeconfig": "/root/.kube/test-agent-eval.kubeconfig",
+  "sandbox": "/tmp/sre-eval-45-omn796b8",
+  "finished_at": "2026-10-16T05:05:41.792236+00:00",
+  "elapsed_seconds": 337.5,
+  "run_status": "timeout",
+  "error": "run exceeded its 300s budget",
+  "stats": {
+    "messages": 80,
+    "model_calls": 20,
+    "tool_calls": 60,
+    "tool_results": 59,
+    "input_tokens": 778873,
+    "output_tokens": 28693
+  },
+  "verdict": "COMPLETE",
+  "verdict_reason": "target objects match pre-fault and are serving",
+  "agent_claims_resolved": "unknown"
+}

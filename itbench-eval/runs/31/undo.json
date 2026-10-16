@@ -1,0 +1,9 @@
+[
+  {
+    "action": "create",
+    "kind": "NetworkPolicy",
+    "name": "frontend-ingress",
+    "namespace": "test-agent",
+    "before": null
+  }
+]

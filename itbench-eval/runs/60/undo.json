@@ -1,0 +1,564 @@
+[
+  {
+    "action": "create",
+    "kind": "ConfigMap",
+    "name": "recommendation-config",
+    "namespace": "test-agent",
+    "before": null
+  },
+  {
+    "action": "patch",
+    "kind": "Deployment",
+    "name": "recommendation",
+    "namespace": "test-agent",
+    "before": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "recommendation",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "recommendation",
+          "app.kubernetes.io/part-of": "opentelemetry-demo",
+          "app.kubernetes.io/version": "3.1.0",
+          "helm.sh/chart": "opentelemetry-demo-0.42.3",
+          "opentelemetry.io/name": "recommendation"
+        },
+        "name": "recommendation",
+        "namespace": "test-agent"
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "opentelemetry.io/name": "recommendation"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "annotations": {
+              "resource.opentelemetry.io/service.namespace": "opentelemetry-demo"
+            },
+            "labels": {
+              "app.kubernetes.io/component": "recommendation",
+              "app.kubernetes.io/name": "recommendation",
+              "app.kubernetes.io/version": "3.1.0",
+              "opentelemetry.io/name": "recommendation"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "OTEL_SERVICE_NAME",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.labels['app.kubernetes.io/component']"
+                      }
+                    }
+                  },
+                  {
+                    "name": "OTEL_COLLECTOR_NAME",
+                    "value": "otel-collector"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE",
+                    "value": "cumulative"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_DEFAULT_HISTOGRAM_AGGREGATION",
+                    "value": "explicit_bucket_histogram"
+                  },
+                  {
+                    "name": "RECOMMENDATION_PORT",
+                    "value": "8080"
+                  },
+                  {
+                    "name": "PRODUCT_CATALOG_ADDR",
+                    "value": "product-catalog:8080"
+                  },
+                  {
+                    "name": "OTEL_PYTHON_LOG_CORRELATION",
+                    "value": "true"
+                  },
+                  {
+                    "name": "PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION",
+                    "value": "python"
+                  },
+                  {
+                    "name": "OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED",
+                    "value": "true"
+                  },
+                  {
+                    "name": "FLAGD_HOST",
+                    "value": "flagd"
+                  },
+                  {
+                    "name": "FLAGD_PORT",
+                    "value": "8013"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+                    "value": "http://$(OTEL_COLLECTOR_NAME):4317"
+                  },
+                  {
+                    "name": "OTEL_RESOURCE_ATTRIBUTES",
+                    "value": "service.version=3.1.0,service.criticality=medium"
+                  }
+                ],
+                "image": "ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-recommendation",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "recommendation",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "service",
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "limits": {
+                    "memory": "500Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "otel-demo",
+            "serviceAccountName": "otel-demo",
+            "terminationGracePeriodSeconds": 30
+          }
+        }
+      }
+    }
+  },
+  {
+    "action": "patch",
+    "kind": "Deployment",
+    "name": "checkout",
+    "namespace": "test-agent",
+    "before": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "checkout",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "checkout",
+          "app.kubernetes.io/part-of": "opentelemetry-demo",
+          "app.kubernetes.io/version": "3.1.0",
+          "helm.sh/chart": "opentelemetry-demo-0.42.3",
+          "opentelemetry.io/name": "checkout"
+        },
+        "name": "checkout",
+        "namespace": "test-agent"
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "opentelemetry.io/name": "checkout"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "annotations": {
+              "resource.opentelemetry.io/service.namespace": "opentelemetry-demo"
+            },
+            "labels": {
+              "app.kubernetes.io/component": "checkout",
+              "app.kubernetes.io/name": "checkout",
+              "app.kubernetes.io/version": "3.1.0",
+              "opentelemetry.io/name": "checkout"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "OTEL_SERVICE_NAME",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.labels['app.kubernetes.io/component']"
+                      }
+                    }
+                  },
+                  {
+                    "name": "OTEL_COLLECTOR_NAME",
+                    "value": "otel-collector"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE",
+                    "value": "cumulative"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_DEFAULT_HISTOGRAM_AGGREGATION",
+                    "value": "explicit_bucket_histogram"
+                  },
+                  {
+                    "name": "CHECKOUT_PORT",
+                    "value": "8080"
+                  },
+                  {
+                    "name": "CART_ADDR",
+                    "value": "cart:8080"
+                  },
+                  {
+                    "name": "CURRENCY_ADDR",
+                    "value": "currency:8080"
+                  },
+                  {
+                    "name": "EMAIL_ADDR",
+                    "value": "http://email:8080"
+                  },
+                  {
+                    "name": "PAYMENT_ADDR",
+                    "value": "payment:8080"
+                  },
+                  {
+                    "name": "PRODUCT_CATALOG_ADDR",
+                    "value": "product-catalog:8080"
+                  },
+                  {
+                    "name": "SHIPPING_ADDR",
+                    "value": "http://shipping:8080"
+                  },
+                  {
+                    "name": "KAFKA_ADDR",
+                    "value": "kafka:9092"
+                  },
+                  {
+                    "name": "KAFKA_TOPIC",
+                    "value": "orders"
+                  },
+                  {
+                    "name": "FLAGD_HOST",
+                    "value": "flagd"
+                  },
+                  {
+                    "name": "FLAGD_PORT",
+                    "value": "8013"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+                    "value": "http://$(OTEL_COLLECTOR_NAME):4318"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_PROTOCOL",
+                    "value": "http/protobuf"
+                  },
+                  {
+                    "name": "GOMEMLIMIT",
+                    "value": "16MiB"
+                  },
+                  {
+                    "name": "OTEL_GO_X_OBSERVABILITY",
+                    "value": "true"
+                  },
+                  {
+                    "name": "OTEL_RESOURCE_ATTRIBUTES",
+                    "value": "service.version=3.1.0,service.criticality=critical"
+                  }
+                ],
+                "image": "ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "checkout",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "service",
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "limits": {
+                    "memory": "32Mi"
+                  }
+                },
+                "securityContext": {
+                  "readOnlyRootFilesystem": true
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "initContainers": [
+              {
+                "command": [
+                  "sh",
+                  "-c",
+                  "until nc -z -v -w30 kafka 9092; do echo waiting for kafka; sleep 2; done;"
+                ],
+                "image": "busybox:latest",
+                "imagePullPolicy": "Always",
+                "name": "wait-for-kafka",
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "nodeSelector": {
+              "kubernetes.io/hostname": "node1"
+            },
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "otel-demo",
+            "serviceAccountName": "otel-demo",
+            "terminationGracePeriodSeconds": 30,
+            "volumes": [
+              {
+                "emptyDir": {},
+                "name": "tmp"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "action": "patch",
+    "kind": "Deployment",
+    "name": "checkout",
+    "namespace": "test-agent",
+    "before": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "checkout",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "checkout",
+          "app.kubernetes.io/part-of": "opentelemetry-demo",
+          "app.kubernetes.io/version": "3.1.0",
+          "helm.sh/chart": "opentelemetry-demo-0.42.3",
+          "opentelemetry.io/name": "checkout"
+        },
+        "name": "checkout",
+        "namespace": "test-agent"
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "opentelemetry.io/name": "checkout"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "annotations": {
+              "resource.opentelemetry.io/service.namespace": "opentelemetry-demo"
+            },
+            "labels": {
+              "app.kubernetes.io/component": "checkout",
+              "app.kubernetes.io/name": "checkout",
+              "app.kubernetes.io/version": "3.1.0",
+              "opentelemetry.io/name": "checkout"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "OTEL_SERVICE_NAME",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.labels['app.kubernetes.io/component']"
+                      }
+                    }
+                  },
+                  {
+                    "name": "OTEL_COLLECTOR_NAME",
+                    "value": "otel-collector"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE",
+                    "value": "cumulative"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_DEFAULT_HISTOGRAM_AGGREGATION",
+                    "value": "explicit_bucket_histogram"
+                  },
+                  {
+                    "name": "CHECKOUT_PORT",
+                    "value": "8080"
+                  },
+                  {
+                    "name": "CART_ADDR",
+                    "value": "cart:8080"
+                  },
+                  {
+                    "name": "CURRENCY_ADDR",
+                    "value": "currency:8080"
+                  },
+                  {
+                    "name": "EMAIL_ADDR",
+                    "value": "http://email:8080"
+                  },
+                  {
+                    "name": "PAYMENT_ADDR",
+                    "value": "payment:8080"
+                  },
+                  {
+                    "name": "PRODUCT_CATALOG_ADDR",
+                    "value": "product-catalog:8080"
+                  },
+                  {
+                    "name": "SHIPPING_ADDR",
+                    "value": "http://shipping:8080"
+                  },
+                  {
+                    "name": "KAFKA_ADDR",
+                    "value": "kafka:9092"
+                  },
+                  {
+                    "name": "KAFKA_TOPIC",
+                    "value": "orders"
+                  },
+                  {
+                    "name": "FLAGD_HOST",
+                    "value": "flagd"
+                  },
+                  {
+                    "name": "FLAGD_PORT",
+                    "value": "8013"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+                    "value": "http://$(OTEL_COLLECTOR_NAME):4318"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_PROTOCOL",
+                    "value": "http/protobuf"
+                  },
+                  {
+                    "name": "GOMEMLIMIT",
+                    "value": "16MiB"
+                  },
+                  {
+                    "name": "OTEL_GO_X_OBSERVABILITY",
+                    "value": "true"
+                  },
+                  {
+                    "name": "OTEL_RESOURCE_ATTRIBUTES",
+                    "value": "service.version=3.1.0,service.criticality=critical"
+                  }
+                ],
+                "image": "quay.io/it-bench/hello-bench-arm64:2.0.0",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "checkout",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "service",
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "limits": {
+                    "memory": "32Mi"
+                  }
+                },
+                "securityContext": {
+                  "readOnlyRootFilesystem": true
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "initContainers": [
+              {
+                "command": [
+                  "sh",
+                  "-c",
+                  "until nc -z -v -w30 kafka 9092; do echo waiting for kafka; sleep 2; done;"
+                ],
+                "image": "busybox:latest",
+                "imagePullPolicy": "Always",
+                "name": "wait-for-kafka",
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "nodeSelector": {
+              "kubernetes.io/hostname": "node1"
+            },
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "otel-demo",
+            "serviceAccountName": "otel-demo",
+            "terminationGracePeriodSeconds": 30,
+            "volumes": [
+              {
+                "emptyDir": {},
+                "name": "tmp"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "action": "waiter",
+    "kind": "Deployment",
+    "name": "checkout",
+    "namespace": "test-agent",
+    "before": null
+  }
+]

@@ -1,0 +1,43 @@
+
+Service restored and verified.
+
+## What was wrong
+
+The `checkout` Deployment had been mutated out-of-band (its Helm release `otel-demo` still renders the clean spec — `helm get manifest` shows the correct image and **no** nodeSelector). Two fields had drifted together:
+
+1. **Image:** `quay.io/it-bench/hello-bench-arm64:2.0.0` instead of `ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout`. The pull failed with `no match for platform` (that image has no matching arch manifest for the node) — every pod of ReplicaSet `checkout-69d7c967bc` went `ErrImagePull`/`ImagePullBackOff` (4 successive pods: `clgg2`, `zlxh5`, `2qz2r`, `77wkp`). Because `maxUnavailable: 25%` rounds down against `replicas: 1`, the rollout could never evict the last good pod, so the Deployment sat stuck at `READY 0/1` while thrashing.
+2. **Scheduling constraint:** `nodeSelector: {kubernetes.io/hostname: node1}` — added to the same template, not in the Helm manifest, and not present on any sibling component. This is exactly the "works but isn't the original configuration" kind of leftover; it disappeared as soon as the image was fixed because the identical old ReplicaSet was reused, so it would have been easy to leave behind silently.
+
+Sibling deployments confirmed the conventions: `ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-<component>` with no nodeSelector (the `wait-for-*` init container is chart standard — `cart` has the same pattern, and it appears in the Helm manifest, so it was left alone).
+
+## Fix applied
+
+One patch to `deployment/checkout` restoring the image and removing `nodeSelector` (revision 31 → 32). Nothing deleted, recreated, scaled or silenced; nothing outside `test-agent`, and nothing else in the namespace touched.
+
+## Verification (re-read after the change)
+
+- Live Deployment spec: image `ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout`; `nodeSelector` absent; env vars, port, limits (`memory: 32Mi`, matching the manifest), init container, service account and annotations all unchanged and matching the Helm-rendered template.
+- `checkout` Deployment: `desired=1, ready=1, available=1`, `Available: True`, `Progressing: True — ReplicaSet "checkout-5db68d9cf7" has successfully progressed`.
+- Pod `checkout-5db68d9cf7-6tsj5` Running, Ready, 0 restarts; the `ImagePullBackOff` pod is gone.
+- Endpoints: `checkout 1/0 OK` (was `1 ready / 1 not-ready`).
+- Warning events: only the pre-fix pull failures remain; no new warnings after the patch.
+
+```json
+{
+  "root_cause": "Deployment test-agent/checkout had been mutated away from its Helm-rendered spec: container image set to the unpullable quay.io/it-bench/hello-bench-arm64:2.0.0 (should be ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout) and an added nodeSelector kubernetes.io/hostname=node1, so its pods stuck in ImagePullBackOff and the rollout could never complete.",
+  "evidence": [
+    "Deployment checkout reported desired=1, ready=0, available=0 with Available: False; pods checkout-69d7c967bc-* in ErrImagePull/ImagePullBackOff",
+    "Warning events: Failed to pull image \"quay.io/it-bench/hello-bench-arm64:2.0.0\": rpc error: code = NotFound desc = get image config descriptor: no match for platform in manifest (4 successive pods: clgg2, zlxh5, 2qz2r, 77wkp)",
+    "kubectl rollout history: revisions 30 and 31 both carry quay.io/it-bench/hello-bench-arm64:2.0.0, while revisions 7/15/29 carry ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout",
+    "helm get manifest otel-demo renders checkout with image ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout and no nodeSelector, and 'hello-bench' appears in neither the release values nor the manifest — the drift was out-of-band, not from the chart",
+    "The live pod template alone carried spec.template.spec.nodeSelector {kubernetes.io/hostname: node1}; sibling deployments payment and cart have no nodeSelector, and the old ReplicaSet checkout-5db68d9cf7 (good image) had none",
+    "Sibling components use the ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-<component> convention, confirming the expected image",
+    "Service checkout selector opentelemetry.io/name=checkout was correct, and it showed 1 ready / 1 not-ready endpoints — traffic was partly blackholed, not a selector problem"
+  ],
+  "actions": [
+    {"tool": "task(change-executor)", "target": "deployment/checkout", "result": "applied"}
+  ],
+  "verification": "Re-read the live Deployment: image is ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-checkout and nodeSelector is absent, with env vars, init container, limits (memory 32Mi), port and service account still matching the Helm-rendered spec. Deployment shows ready=1/available=1 with Available: True and ReplicaSet checkout-5db68d9cf7 successfully progressed (revision 32); pod checkout-5db68d9cf7-6tsj5 Running/Ready/0 restarts; endpoints checkout 1 ready / 0 not-ready; only pre-fix ImagePullBackOff warnings remain in events.",
+  "resolved": true
+}
+```

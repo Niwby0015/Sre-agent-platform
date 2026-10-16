@@ -1,0 +1,450 @@
+[
+  {
+    "chunk_id": "pod-triage",
+    "file": "knowledge/runbooks/chunks/pod-crashloop__pod-triage.md",
+    "source": "pod-crashloop.md",
+    "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+    "title": "Debug Pods",
+    "title_path": [
+      "Debug Pods",
+      "Diagnosing the problem"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 688,
+    "words": 99
+  },
+  {
+    "chunk_id": "pod-pending",
+    "file": "knowledge/runbooks/chunks/pod-crashloop__pod-pending.md",
+    "source": "pod-crashloop.md",
+    "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+    "title": "Debug Pods",
+    "title_path": [
+      "Debug Pods",
+      "My pod stays pending"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 1051,
+    "words": 172
+  },
+  {
+    "chunk_id": "pod-image-pull",
+    "file": "knowledge/runbooks/chunks/pod-crashloop__pod-image-pull.md",
+    "source": "pod-crashloop.md",
+    "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+    "title": "Debug Pods",
+    "title_path": [
+      "Debug Pods",
+      "My pod stays waiting"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 570,
+    "words": 109
+  },
+  {
+    "chunk_id": "pod-terminating",
+    "file": "knowledge/runbooks/chunks/pod-crashloop__pod-terminating.md",
+    "source": "pod-crashloop.md",
+    "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+    "title": "Debug Pods",
+    "title_path": [
+      "Debug Pods",
+      "My pod stays terminating"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 1335,
+    "words": 192
+  },
+  {
+    "chunk_id": "pod-crashing",
+    "file": "knowledge/runbooks/chunks/pod-crashloop__pod-crashing.md",
+    "source": "pod-crashloop.md",
+    "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+    "title": "Debug Pods",
+    "title_path": [
+      "Debug Pods",
+      "My pod is crashing or otherwise unhealthy"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 212,
+    "words": 25
+  },
+  {
+    "chunk_id": "pod-running-unhealthy",
+    "file": "knowledge/runbooks/chunks/pod-crashloop__pod-running-unhealthy.md",
+    "source": "pod-crashloop.md",
+    "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+    "title": "Debug Pods",
+    "title_path": [
+      "Debug Pods",
+      "My pod is running but not doing what I told it to do"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 1607,
+    "words": 266
+  },
+  {
+    "chunk_id": "pod-controller",
+    "file": "knowledge/runbooks/chunks/pod-crashloop__pod-controller.md",
+    "source": "pod-crashloop.md",
+    "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+    "title": "Debug Pods",
+    "title_path": [
+      "Debug Pods",
+      "Debugging Replication Controllers"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 362,
+    "words": 49
+  },
+  {
+    "chunk_id": "service-endpoints",
+    "file": "knowledge/runbooks/chunks/pod-crashloop__service-endpoints.md",
+    "source": "pod-crashloop.md",
+    "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+    "title": "Debug Pods",
+    "title_path": [
+      "Debug Pods",
+      "Debugging Services"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 1314,
+    "words": 199
+  },
+  {
+    "chunk_id": "service-network",
+    "file": "knowledge/runbooks/chunks/pod-crashloop__service-network.md",
+    "source": "pod-crashloop.md",
+    "source_url": "https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/",
+    "title": "Debug Pods",
+    "title_path": [
+      "Debug Pods",
+      "Network traffic is not forwarded"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 143,
+    "words": 13
+  },
+  {
+    "chunk_id": "resource-requests-limits",
+    "file": "knowledge/runbooks/chunks/pod-oomkilled__resource-requests-limits.md",
+    "source": "pod-oomkilled.md",
+    "source_url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+    "title": "Resource Management for Pods and Containers",
+    "title_path": [
+      "Resource Management for Pods and Containers",
+      "Requests and limits"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 1937,
+    "words": 319
+  },
+  {
+    "chunk_id": "resource-types",
+    "file": "knowledge/runbooks/chunks/pod-oomkilled__resource-types.md",
+    "source": "pod-oomkilled.md",
+    "source_url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+    "title": "Resource Management for Pods and Containers",
+    "title_path": [
+      "Resource Management for Pods and Containers",
+      "Resource types"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 1604,
+    "words": 221
+  },
+  {
+    "chunk_id": "resource-units-cpu-memory",
+    "file": "knowledge/runbooks/chunks/pod-oomkilled__resource-units-cpu-memory.md",
+    "source": "pod-oomkilled.md",
+    "source_url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+    "title": "Resource Management for Pods and Containers",
+    "title_path": [
+      "Resource Management for Pods and Containers",
+      "Resource units in Kubernetes"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 2629,
+    "words": 415
+  },
+  {
+    "chunk_id": "resource-scheduling",
+    "file": "knowledge/runbooks/chunks/pod-oomkilled__resource-scheduling.md",
+    "source": "pod-oomkilled.md",
+    "source_url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+    "title": "Resource Management for Pods and Containers",
+    "title_path": [
+      "Resource Management for Pods and Containers",
+      "How Pods with resource requests are scheduled"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 704,
+    "words": 127
+  },
+  {
+    "chunk_id": "resource-enforcement",
+    "file": "knowledge/runbooks/chunks/pod-oomkilled__resource-enforcement.md",
+    "source": "pod-oomkilled.md",
+    "source_url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+    "title": "Resource Management for Pods and Containers",
+    "title_path": [
+      "Resource Management for Pods and Containers",
+      "How Kubernetes applies resource requests and limits"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 4432,
+    "words": 613
+  },
+  {
+    "chunk_id": "resource-monitoring",
+    "file": "knowledge/runbooks/chunks/pod-oomkilled__resource-monitoring.md",
+    "source": "pod-oomkilled.md",
+    "source_url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+    "title": "Resource Management for Pods and Containers",
+    "title_path": [
+      "Resource Management for Pods and Containers",
+      "Monitoring compute & memory resource usage"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 3543,
+    "words": 479
+  },
+  {
+    "chunk_id": "resource-ephemeral-storage",
+    "file": "knowledge/runbooks/chunks/pod-oomkilled__resource-ephemeral-storage.md",
+    "source": "pod-oomkilled.md",
+    "source_url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+    "title": "Resource Management for Pods and Containers",
+    "title_path": [
+      "Resource Management for Pods and Containers",
+      "Local ephemeral storage"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 827,
+    "words": 120
+  },
+  {
+    "chunk_id": "resource-troubleshooting-pending",
+    "file": "knowledge/runbooks/chunks/pod-oomkilled__resource-troubleshooting-pending.md",
+    "source": "pod-oomkilled.md",
+    "source_url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+    "title": "Resource Management for Pods and Containers",
+    "title_path": [
+      "Resource Management for Pods and Containers",
+      "My Pods are pending with event message `FailedScheduling`"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 4705,
+    "words": 617
+  },
+  {
+    "chunk_id": "resource-troubleshooting-terminated",
+    "file": "knowledge/runbooks/chunks/pod-oomkilled__resource-troubleshooting-terminated.md",
+    "source": "pod-oomkilled.md",
+    "source_url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/",
+    "title": "Resource Management for Pods and Containers",
+    "title_path": [
+      "Resource Management for Pods and Containers",
+      "My container is terminated"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Pod",
+    "severity": "warning",
+    "characters": 2250,
+    "words": 251
+  },
+  {
+    "chunk_id": "eviction-overview",
+    "file": "knowledge/runbooks/chunks/node-pressure-eviction__eviction-overview.md",
+    "source": "node-pressure-eviction.md",
+    "source_url": "https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/",
+    "title": "Node-pressure Eviction",
+    "title_path": [
+      "Node-pressure Eviction",
+      "Self healing behavior"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Node",
+    "severity": "warning",
+    "characters": 1156,
+    "words": 182
+  },
+  {
+    "chunk_id": "eviction-signals-memory",
+    "file": "knowledge/runbooks/chunks/node-pressure-eviction__eviction-signals-memory.md",
+    "source": "node-pressure-eviction.md",
+    "source_url": "https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/",
+    "title": "Node-pressure Eviction",
+    "title_path": [
+      "Node-pressure Eviction",
+      "Memory signals"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Node",
+    "severity": "warning",
+    "characters": 1987,
+    "words": 213
+  },
+  {
+    "chunk_id": "eviction-signals-filesystem",
+    "file": "knowledge/runbooks/chunks/node-pressure-eviction__eviction-signals-filesystem.md",
+    "source": "node-pressure-eviction.md",
+    "source_url": "https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/",
+    "title": "Node-pressure Eviction",
+    "title_path": [
+      "Node-pressure Eviction",
+      "Filesystem signals"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Node",
+    "severity": "warning",
+    "characters": 2669,
+    "words": 364
+  },
+  {
+    "chunk_id": "eviction-thresholds",
+    "file": "knowledge/runbooks/chunks/node-pressure-eviction__eviction-thresholds.md",
+    "source": "node-pressure-eviction.md",
+    "source_url": "https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/",
+    "title": "Node-pressure Eviction",
+    "title_path": [
+      "Node-pressure Eviction",
+      "Eviction thresholds"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Node",
+    "severity": "warning",
+    "characters": 4093,
+    "words": 576
+  },
+  {
+    "chunk_id": "node-conditions",
+    "file": "knowledge/runbooks/chunks/node-pressure-eviction__node-conditions.md",
+    "source": "node-pressure-eviction.md",
+    "source_url": "https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/",
+    "title": "Node-pressure Eviction",
+    "title_path": [
+      "Node-pressure Eviction",
+      "Node conditions"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Node",
+    "severity": "warning",
+    "characters": 2254,
+    "words": 219
+  },
+  {
+    "chunk_id": "node-reclaim-resources",
+    "file": "knowledge/runbooks/chunks/node-pressure-eviction__node-reclaim-resources.md",
+    "source": "node-pressure-eviction.md",
+    "source_url": "https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/",
+    "title": "Node-pressure Eviction",
+    "title_path": [
+      "Node-pressure Eviction",
+      "Reclaiming node level resources"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Node",
+    "severity": "warning",
+    "characters": 1322,
+    "words": 192
+  },
+  {
+    "chunk_id": "pod-eviction-selection",
+    "file": "knowledge/runbooks/chunks/node-pressure-eviction__pod-eviction-selection.md",
+    "source": "node-pressure-eviction.md",
+    "source_url": "https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/",
+    "title": "Node-pressure Eviction",
+    "title_path": [
+      "Node-pressure Eviction",
+      "Pod selection for kubelet eviction"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Node",
+    "severity": "warning",
+    "characters": 3452,
+    "words": 514
+  },
+  {
+    "chunk_id": "minimum-eviction-reclaim",
+    "file": "knowledge/runbooks/chunks/node-pressure-eviction__minimum-eviction-reclaim.md",
+    "source": "node-pressure-eviction.md",
+    "source_url": "https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/",
+    "title": "Node-pressure Eviction",
+    "title_path": [
+      "Node-pressure Eviction",
+      "Minimum eviction reclaim"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Node",
+    "severity": "warning",
+    "characters": 1795,
+    "words": 235
+  },
+  {
+    "chunk_id": "node-oom",
+    "file": "knowledge/runbooks/chunks/node-pressure-eviction__node-oom.md",
+    "source": "node-pressure-eviction.md",
+    "source_url": "https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/",
+    "title": "Node-pressure Eviction",
+    "title_path": [
+      "Node-pressure Eviction",
+      "Node out of memory behavior"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Node",
+    "severity": "warning",
+    "characters": 1524,
+    "words": 188
+  },
+  {
+    "chunk_id": "good-practices",
+    "file": "knowledge/runbooks/chunks/node-pressure-eviction__good-practices.md",
+    "source": "node-pressure-eviction.md",
+    "source_url": "https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/",
+    "title": "Node-pressure Eviction",
+    "title_path": [
+      "Node-pressure Eviction",
+      "Good practices"
+    ],
+    "kind": "runbook",
+    "resource_kind": "Node",
+    "severity": "warning",
+    "characters": 1581,
+    "words": 239
+  }
+]

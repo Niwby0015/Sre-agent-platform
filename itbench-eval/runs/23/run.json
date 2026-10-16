@@ -1,0 +1,40 @@
+{
+  "scenario_id": "23",
+  "namespace": "test-agent",
+  "task": "The `checkout` service in namespace `test-agent` is failing — callers report errors. Find the root cause and restore service.",
+  "model": "claude-sonnet-4-6",
+  "subagent_model": "claude-haiku-4-5",
+  "hitl_enabled": false,
+  "timeout_seconds": 300,
+  "started_at": "2026-10-16T06:25:28.973851+00:00",
+  "env": {
+    "HITL_ENABLED": "false",
+    "AGENT_RECURSION_LIMIT": "1000",
+    "DATABASE_URL": "",
+    "PROMETHEUS_URL": "http://10.97.161.150:9090",
+    "proxies_dropped": "ALL_PROXY, all_proxy, HTTP_PROXY, http_proxy, HTTPS_PROXY, https_proxy"
+  },
+  "kubeconfig": "/root/.kube/test-agent-eval.kubeconfig",
+  "sandbox": "/tmp/sre-eval-23-ljhphvho",
+  "finished_at": "2026-10-16T06:27:51.632060+00:00",
+  "elapsed_seconds": 142.7,
+  "run_status": "finished",
+  "error": null,
+  "stats": {
+    "messages": 58,
+    "model_calls": 15,
+    "tool_calls": 42,
+    "tool_results": 42,
+    "input_tokens": 502790,
+    "output_tokens": 17725,
+    "steps": 66,
+    "auto_approvals": 0
+  },
+  "verdict": "COMPLETE",
+  "verdict_reason": "Deployment/checkout spec matches pre-fault — both the image and the nodeSelector were undone",
+  "agent_claims_resolved": "unknown",
+  "revert_incomplete": [
+    "Deployment/checkout: Deployment/checkout still differs from pre-fault in: containers"
+  ],
+  "verdict_corrected": "judge first reported FAIL by comparing against a mid-injection snapshot (the second patch of the same object); re-judged against the pristine state. Executor used the new kubectl_patch_deployment tool."
+}

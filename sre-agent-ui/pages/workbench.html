@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能助手</title>
+    <style id="theme-vars">
+/* SRE-Agent UI — light ops console tokens */
+
+:root {
+  /* Neutral foundation */
+  --sre-background: #ffffff;
+  --sre-foreground: #1f2937;
+  --sre-card: #ffffff;
+  --sre-card-foreground: #1f2937;
+  --sre-popover: #ffffff;
+  --sre-popover-foreground: #1f2937;
+  --sre-muted: #f3f4f6;
+  --sre-muted-foreground: #6b7280;
+  --sre-border: #e5e7eb;
+  --sre-input: #f9fafb;
+  --sre-ring: #0891b2;
+
+  /* Brand primary — cyan */
+  --sre-primary: #0e7490;
+  --sre-primary-foreground: #ffffff;
+  --sre-primary-hover: #155e75;
+  --sre-primary-subtle: rgba(14, 116, 144, 0.10);
+
+  /* Semantic surfaces */
+  --sre-surface: #ffffff;
+  --sre-surface-2: #f3f4f6;
+  --sre-surface-3: #e5e7eb;
+  --sre-line: #e5e7eb;
+
+  /* State colors */
+  --sre-state-success: #16a34a;
+  --sre-state-success-subtle: rgba(22, 163, 74, 0.12);
+  --sre-state-warning: #d97706;
+  --sre-state-warning-subtle: rgba(217, 119, 6, 0.12);
+  --sre-state-error: #dc2626;
+  --sre-state-error-subtle: rgba(220, 38, 38, 0.12);
+  --sre-state-info: #2563eb;
+  --sre-state-info-subtle: rgba(37, 99, 235, 0.12);
+
+  /* Radius */
+  --sre-radius-small: 4px;
+  --sre-radius-medium: 8px;
+  --sre-radius-large: 12px;
+
+  /* Typography */
+  --sre-font-sans: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --sre-font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+}
+
+.light {
+  color-scheme: light;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--sre-background);
+    --color-foreground: var(--sre-foreground);
+    --color-card: var(--sre-card);
+    --color-card-foreground: var(--sre-card-foreground);
+    --color-popover: var(--sre-popover);
+    --color-popover-foreground: var(--sre-popover-foreground);
+    --color-primary: var(--sre-primary);
+    --color-primary-foreground: var(--sre-primary-foreground);
+    --color-muted: var(--sre-muted);
+    --color-muted-foreground: var(--sre-muted-foreground);
+    --color-border: var(--sre-border);
+    --color-input: var(--sre-input);
+    --color-ring: var(--sre-ring);
+    --radius-sm: var(--sre-radius-small);
+    --radius-md: var(--sre-radius-medium);
+    --radius-lg: var(--sre-radius-large);
+  }
+  @layer base {
+    body { background: var(--sre-background); color: var(--sre-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--sre-background); }
+      .text-background { color: var(--sre-background); }
+      .border-background { border-color: var(--sre-background); }
+      .ring-background { --tw-ring-color: var(--sre-background); }
+      .bg-foreground { background-color: var(--sre-foreground); }
+      .text-foreground { color: var(--sre-foreground); }
+      .border-foreground { border-color: var(--sre-foreground); }
+      .ring-foreground { --tw-ring-color: var(--sre-foreground); }
+      .bg-card { background-color: var(--sre-card); }
+      .text-card { color: var(--sre-card); }
+      .border-card { border-color: var(--sre-card); }
+      .ring-card { --tw-ring-color: var(--sre-card); }
+      .bg-card-foreground { background-color: var(--sre-card-foreground); }
+      .text-card-foreground { color: var(--sre-card-foreground); }
+      .border-card-foreground { border-color: var(--sre-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--sre-card-foreground); }
+      .bg-popover { background-color: var(--sre-popover); }
+      .text-popover { color: var(--sre-popover); }
+      .border-popover { border-color: var(--sre-popover); }
+      .ring-popover { --tw-ring-color: var(--sre-popover); }
+      .bg-popover-foreground { background-color: var(--sre-popover-foreground); }
+      .text-popover-foreground { color: var(--sre-popover-foreground); }
+      .border-popover-foreground { border-color: var(--sre-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--sre-popover-foreground); }
+      .bg-primary { background-color: var(--sre-primary); }
+      .text-primary { color: var(--sre-primary); }
+      .border-primary { border-color: var(--sre-primary); }
+      .ring-primary { --tw-ring-color: var(--sre-primary); }
+      .bg-primary-foreground { background-color: var(--sre-primary-foreground); }
+      .text-primary-foreground { color: var(--sre-primary-foreground); }
+      .border-primary-foreground { border-color: var(--sre-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--sre-primary-foreground); }
+      .bg-muted { background-color: var(--sre-muted); }
+      .text-muted { color: var(--sre-muted); }
+      .border-muted { border-color: var(--sre-muted); }
+      .ring-muted { --tw-ring-color: var(--sre-muted); }
+      .bg-muted-foreground { background-color: var(--sre-muted-foreground); }
+      .text-muted-foreground { color: var(--sre-muted-foreground); }
+      .border-muted-foreground { border-color: var(--sre-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--sre-muted-foreground); }
+      .bg-border { background-color: var(--sre-border); }
+      .text-border { color: var(--sre-border); }
+      .border-border { border-color: var(--sre-border); }
+      .ring-border { --tw-ring-color: var(--sre-border); }
+      .bg-input { background-color: var(--sre-input); }
+      .text-input { color: var(--sre-input); }
+      .border-input { border-color: var(--sre-input); }
+      .ring-input { --tw-ring-color: var(--sre-input); }
+      .bg-ring { background-color: var(--sre-ring); }
+      .text-ring { color: var(--sre-ring); }
+      .border-ring { border-color: var(--sre-ring); }
+      .ring-ring { --tw-ring-color: var(--sre-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+<div class="sre-shell">
+  <header class="sre-topbar">
+    <div class="sre-topbar-left">
+      <div class="sre-logo">
+        <span class="sre-logo-mark">SRE</span>
+        <span>AI-SRE</span>
+      </div>
+      <span class="sre-ctx-chip" aria-label="当前集群">
+        <span class="sre-ctx-dot" data-sre-ctx-state="unknown"></span>
+        <span data-sre-context="cluster">连接中…</span>
+      </span>
+    </div>
+    <div class="sre-topbar-right">
+      <input class="sre-search" type="search" placeholder="搜索 Pod / 节点 / Runbook" />
+      <button class="sre-icon-btn" aria-label="通知"><i data-lucide="bell" style="width:16px;height:16px"></i></button>
+      <span class="sre-avatar">OP</span>
+    </div>
+  </header>
+
+  <nav class="sre-sidebar">
+    <a href="dashboard.html" class="sre-nav-item" data-nav-key="dashboard" data-dom-id="nav-dashboard"><i data-lucide="layout-dashboard"></i> 总览</a>
+    <div class="sre-nav-group">
+      <div class="sre-nav-item sre-nav-group-label"><i data-lucide="message-square"></i> 智能助手</div>
+      <div class="sre-nav-sub">
+        <a href="workbench.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="workbench" data-dom-id="nav-workbench" data-active="true">工作台</a>
+        <a href="skillhub.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="skillhub" data-dom-id="nav-skillhub">技能中心</a>
+      </div>
+    </div>
+    <a href="runbooks.html" class="sre-nav-item" data-nav-key="runbooks" data-dom-id="nav-runbooks"><i data-lucide="book-open"></i> Runbook 资料库</a>
+    <a href="health.html" class="sre-nav-item" data-nav-key="health" data-dom-id="nav-health"><i data-lucide="activity"></i> 健康检查</a>
+    <div class="sre-nav-group">
+      <div class="sre-nav-item sre-nav-group-label"><i data-lucide="bar-chart-3"></i> 数据中心</div>
+      <div class="sre-nav-sub">
+        <a href="datacenter.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="datacenter" data-dom-id="nav-datacenter">总览</a>
+        <a href="datacenter-pods.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-pods" data-dom-id="nav-dc-pods">Pod</a>
+        <a href="datacenter-workloads.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-workloads" data-dom-id="nav-dc-workloads">工作负载</a>
+        <a href="datacenter-nodes.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-nodes" data-dom-id="nav-dc-nodes">节点</a>
+        <a href="datacenter-storage.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-storage" data-dom-id="nav-dc-storage">存储</a>
+      </div>
+    </div>
+    <a href="alerts.html" class="sre-nav-item" data-nav-key="alerts" data-dom-id="nav-alerts"><i data-lucide="bell-ring"></i> 告警中心</a>
+    <a href="approvals.html" class="sre-nav-item" data-nav-key="approvals" data-dom-id="nav-approvals"><i data-lucide="shield-check"></i> 审批中心</a>
+    <a href="audit.html" class="sre-nav-item" data-nav-key="audit" data-dom-id="nav-audit"><i data-lucide="clipboard-list"></i> 审计日志</a>
+  </nav>
+
+  <main class="sre-main">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h1 class="sre-section-title" style="margin:0">智能助手工作台</h1>
+      <button id="sre-new-session" class="sre-btn sre-btn-secondary sre-btn-sm"><i data-lucide="plus" style="width:14px;height:14px"></i> 新建会话</button>
+    </div>
+    <div class="sre-chat-layout">
+      <div class="sre-chat-panel">
+        <div class="sre-chat-header">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--sre-state-success)"></span>
+            <span style="font-weight:600">SRE-Agent</span>
+            <span class="sre-text-muted" style="font-size:13px">在线</span>
+          </div>
+          <span class="sre-badge sre-badge-info">上下文: <span data-sre-context="cluster">—</span></span>
+        </div>
+        <div class="sre-chat-messages">
+          <div class="sre-chat-empty">在此处与agent工作</div>
+        </div>
+        <div class="sre-chat-input">
+          <input type="text" placeholder="输入运维指令，例如：执行健康检查 / 查询 Pod 日志 / 扩容 Deployment" />
+          <button class="sre-btn sre-btn-primary"><i data-lucide="send" style="width:16px;height:16px"></i></button>
+        </div>
+      </div>
+      <div class="sre-rail">
+        <div class="sre-sidebar-card">
+          <div class="sre-sidebar-title">推荐操作</div>
+          <button class="sre-btn sre-btn-secondary sre-btn-sm sre-quick-btn"><i data-lucide="activity" style="width:14px;height:14px"></i> 执行全量健康检查</button>
+          <button class="sre-btn sre-btn-secondary sre-btn-sm sre-quick-btn"><i data-lucide="zap" style="width:14px;height:14px"></i> 扩容 api-gateway</button>
+          <button class="sre-btn sre-btn-secondary sre-btn-sm sre-quick-btn"><i data-lucide="file-text" style="width:14px;height:14px"></i> 生成事件报告</button>
+        </div>
+        <div class="sre-sidebar-card">
+          <div class="sre-sidebar-title">当前上下文</div>
+          <div class="sre-context-item"><span>集群</span><span class="sre-text-muted" data-sre-context="cluster">—</span></div>
+          <div class="sre-context-item"><span>命名空间</span><span class="sre-text-muted" data-sre-context="namespaces">—</span></div>
+          <div class="sre-context-item"><span>告警</span><span class="sre-badge sre-badge-success" data-sre-context="alerts">—</span></div>
+          <div class="sre-context-item"><span>待审批</span><span class="sre-badge sre-badge-success" data-sre-context="approvals">—</span></div>
+        </div>
+        <div class="sre-sidebar-card" id="sre-cot-card">
+          <div class="sre-sidebar-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <span>思维链</span>
+            <span style="display:flex;align-items:center;gap:6px">
+              <span class="sre-badge sre-badge-info" id="sre-cot-source" hidden></span>
+              <button class="sre-cot-toggle" id="sre-cot-toggle" type="button" data-active="true" aria-label="折叠思维链">
+                <i data-lucide="chevron-up" style="width:14px;height:14px"></i>
+              </button>
+            </span>
+          </div>
+          <div id="sre-cot-steps" class="sre-cot-steps">
+            <div class="sre-cot-empty">开始对话后，这里显示 agent 的推理与动作</div>
+          </div>
+        </div>
+        <div class="sre-sidebar-card">
+          <div class="sre-sidebar-title">会话历史</div>
+          <div id="sre-session-history"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+    <script>lucide.createIcons();</script>
+
+    <style>
+  .sre-shell { display: flex; min-height: 100vh; background: var(--sre-background); color: var(--sre-foreground); font-family: var(--sre-font-sans); }
+  .sre-topbar { position: fixed; inset: 0 0 auto 0; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--sre-surface); border-bottom: 1px solid var(--sre-line); z-index: 50; }
+  .sre-topbar-left, .sre-topbar-right { display: flex; align-items: center; gap: 16px; }
+  .sre-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -0.02em; }
+  .sre-logo-mark { width: 28px; height: 28px; border-radius: var(--sre-radius-medium); background: var(--sre-primary); color: var(--sre-primary-foreground); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .sre-select { height: 32px; padding: 0 28px 0 12px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 13px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+  /* 顶栏集群标识：只读。原来是个下拉框，但列表里是两个不存在的集群，
+     而且切换没有任何后端语义 —— 换成展示真实集群名 + 连通状态的 chip。 */
+  .sre-ctx-chip { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); font-size: 13px; }
+  .sre-ctx-dot { width: 8px; height: 8px; border-radius: 9999px; background: var(--sre-muted-foreground); flex: none; }
+  .sre-ctx-dot[data-state="live"] { background: var(--sre-state-success); }
+  .sre-ctx-dot[data-state="down"] { background: var(--sre-state-error); }
+  .sre-search { width: 240px; height: 32px; padding: 0 12px 0 32px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 13px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 10px center; }
+  .sre-icon-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--sre-radius-medium); background: transparent; border: 1px solid var(--sre-border); color: var(--sre-muted-foreground); cursor: pointer; }
+  .sre-avatar { width: 30px; height: 30px; border-radius: 9999px; background: var(--sre-surface-3); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; color: var(--sre-muted-foreground); border: 1px solid var(--sre-border); }
+  .sre-sidebar { position: fixed; top: 56px; left: 0; bottom: 0; width: 220px; padding: 16px 12px; background: var(--sre-surface); border-right: 1px solid var(--sre-line); display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+  .sre-nav-item { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-radius: var(--sre-radius-medium); color: var(--sre-muted-foreground); font-size: 14px; text-decoration: none; transition: background 120ms ease, color 120ms ease; }
+  .sre-nav-item:hover { background: var(--sre-surface-2); color: var(--sre-foreground); }
+  .sre-nav-item[data-active="true"] { background: var(--sre-primary-subtle); color: var(--sre-primary); }
+  .sre-nav-item i { width: 18px; height: 18px; }
+  .sre-nav-group { display: flex; flex-direction: column; }
+  .sre-nav-group-label { cursor: default; }
+  .sre-nav-group-label:hover { background: transparent; color: var(--sre-muted-foreground); }
+  .sre-nav-sub { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 6px 9px; padding-left: 16px; border-left: 1px solid var(--sre-border); }
+  .sre-nav-sub-item { height: 34px; font-size: 13px; padding-left: 10px; }
+  .sre-main { margin-left: 220px; margin-top: 56px; min-height: calc(100vh - 56px); padding: 24px; flex: 1 1 auto; min-width: 0; }
+  .sre-card { background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); }
+  .sre-section-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; }
+  .sre-kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .sre-kpi { padding: 20px; }
+  .sre-kpi-value { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .sre-kpi-label { font-size: 13px; color: var(--sre-muted-foreground); margin-top: 6px; }
+  .sre-kpi-delta { font-size: 12px; margin-top: 8px; }
+  .sre-list { display: flex; flex-direction: column; }
+  .sre-list-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--sre-border); gap: 12px; }
+  .sre-list-row:last-child { border-bottom: none; }
+  .sre-list-meta { font-size: 13px; color: var(--sre-muted-foreground); }
+  .sre-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--sre-radius-medium); font-size: 12px; font-weight: 600; }
+  .sre-badge-error { background: var(--sre-state-error-subtle); color: var(--sre-state-error); }
+  .sre-badge-warning { background: var(--sre-state-warning-subtle); color: var(--sre-state-warning); }
+  .sre-badge-success { background: var(--sre-state-success-subtle); color: var(--sre-state-success); }
+  .sre-badge-info { background: var(--sre-state-info-subtle); color: var(--sre-state-info); }
+  .sre-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: var(--sre-radius-medium); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 120ms ease; }
+  .sre-btn-primary { background: var(--sre-primary); color: var(--sre-primary-foreground); }
+  .sre-btn-primary:hover { background: var(--sre-primary-hover); }
+  .sre-btn-secondary { background: var(--sre-surface-2); color: var(--sre-foreground); border: 1px solid var(--sre-border); }
+  .sre-btn-secondary:hover { background: var(--sre-surface-3); }
+  .sre-btn-sm { height: 30px; padding: 0 12px; font-size: 13px; }
+  .sre-input { height: 40px; padding: 0 12px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 14px; }
+  .sre-text-muted { color: var(--sre-muted-foreground); }
+  .sre-text-tertiary { color: var(--sre-muted-foreground); font-size: 13px; }
+  .sre-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .sre-table th, .sre-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--sre-border); }
+  .sre-table th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sre-muted-foreground); font-weight: 600; }
+  .sre-table tr:last-child td { border-bottom: none; }
+  .sre-empty { padding: 48px; text-align: center; color: var(--sre-muted-foreground); }
+  .sre-chat-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; height: calc(100vh - 128px); }
+  .sre-chat-panel { display: flex; flex-direction: column; background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); overflow: hidden; }
+  .sre-chat-header { padding: 16px 20px; border-bottom: 1px solid var(--sre-border); display: flex; align-items: center; justify-content: space-between; }
+  .sre-chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .sre-chat-empty { margin: auto; padding: 40px 20px; text-align: center; color: var(--sre-muted-foreground); font-size: 14px; }
+  .sre-message { max-width: 80%; padding: 12px 16px; border-radius: var(--sre-radius-large); font-size: 14px; line-height: 1.6; }
+  .sre-message-agent { align-self: flex-start; background: var(--sre-surface-2); border: 1px solid var(--sre-border); }
+  .sre-message-user { align-self: flex-end; background: var(--sre-primary); color: var(--sre-primary-foreground); }
+  .sre-message pre { background: var(--sre-background); padding: 10px; border-radius: var(--sre-radius-medium); margin-top: 8px; font-family: var(--sre-font-mono); font-size: 12px; overflow-x: auto; }
+  .sre-message h1, .sre-message h2, .sre-message h3, .sre-message h4 { font-weight: 600; margin: 12px 0 6px; line-height: 1.3; }
+  .sre-message h1 { font-size: 18px; } .sre-message h2 { font-size: 16px; } .sre-message h3 { font-size: 15px; } .sre-message h4 { font-size: 14px; }
+  .sre-message p { margin: 6px 0; }
+  .sre-message ul, .sre-message ol { margin: 6px 0; padding-left: 20px; }
+  .sre-message li { margin: 3px 0; }
+  .sre-message code { font-family: var(--sre-font-mono); font-size: 12px; background: var(--sre-surface-3); padding: 1px 5px; border-radius: 4px; }
+  .sre-message pre code { background: transparent; padding: 0; }
+  .sre-message table { border-collapse: collapse; margin: 10px 0; font-size: 13px; display: block; width: max-content; max-width: 100%; overflow-x: auto; }
+  .sre-message th, .sre-message td { border: 1px solid var(--sre-border); padding: 8px 10px; text-align: left; }
+  .sre-message th { background: var(--sre-surface-2); font-weight: 600; }
+  .sre-message blockquote { border-left: 3px solid var(--sre-border); padding-left: 12px; margin: 8px 0; color: var(--sre-muted-foreground); }
+  .sre-message a { color: var(--sre-primary); text-decoration: underline; }
+  .sre-message hr { border: none; border-top: 1px solid var(--sre-border); margin: 12px 0; }
+  .sre-message strong { font-weight: 600; }
+  .sre-chat-input { padding: 16px 20px; border-top: 1px solid var(--sre-border); display: flex; gap: 12px; }
+  .sre-chat-input input { flex: 1; height: 44px; padding: 0 16px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 14px; }
+  .sre-sidebar-card { background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); padding: 20px; margin-bottom: 20px; }
+  .sre-sidebar-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+  .sre-quick-btn { width: 100%; justify-content: flex-start; margin-bottom: 8px; }
+  .sre-context-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--sre-border); font-size: 13px; }
+  .sre-context-item:last-child { border-bottom: none; }
+  .sre-history-item { cursor: pointer; border-radius: var(--sre-radius-medium); padding: 10px 8px; }
+  .sre-history-item:hover { background: var(--sre-surface-2); }
+  .sre-history-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 8px; }
+  /* 右列原来是没 class 的裸 div，在固定行高的 grid 里没有滚动——加一张卡片就会把
+     「会话历史」顶出视口。min-height:0 是让 flex/grid 子项真正允许收缩的关键。 */
+  .sre-rail { display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
+  /* 状态点沿用 health.html 的既有范式（那几页的样式是页面局部的，没有共享表） */
+  .sre-status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+  .sre-status-pass { background: var(--sre-state-success); }
+  .sre-status-warn { background: var(--sre-state-warning); }
+  .sre-status-fail { background: var(--sre-state-error); }
+  .sre-status-run { background: var(--sre-state-info); }
+  .sre-status-idle { background: var(--sre-muted-foreground); }
+  .sre-cot-toggle { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--sre-radius-medium); background: transparent; border: 1px solid var(--sre-border); color: var(--sre-muted-foreground); cursor: pointer; }
+  .sre-cot-toggle[data-active="false"] i { transform: rotate(180deg); }
+  .sre-cot-steps { max-height: 320px; overflow-y: auto; }
+  .sre-cot-card-collapsed .sre-cot-steps { display: none; }
+  .sre-cot-step { padding: 10px 0; border-bottom: 1px solid var(--sre-border); font-size: 13px; }
+  .sre-cot-step:last-child { border-bottom: none; }
+  .sre-cot-step-head { display: flex; align-items: center; gap: 8px; }
+  .sre-cot-label { flex: none; font-size: 11px; padding: 1px 6px; border-radius: var(--sre-radius-small); background: var(--sre-surface-2); color: var(--sre-muted-foreground); }
+  .sre-cot-step-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .sre-cot-step-meta { margin-top: 4px; font-size: 12px; color: var(--sre-muted-foreground); overflow-wrap: anywhere; }
+  .sre-cot-node { font-family: var(--sre-font-mono); }
+  .sre-cot-raw { margin: 6px 0 0; padding: 8px; background: var(--sre-background); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-medium); font-family: var(--sre-font-mono); font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 220px; overflow: auto; }
+  .sre-cot-raw-wrap > summary { cursor: pointer; font-size: 12px; color: var(--sre-muted-foreground); margin-top: 4px; }
+  .sre-cot-empty { color: var(--sre-muted-foreground); font-size: 13px; padding: 4px 0; }
+</style>
+<!-- 必须在内联脚本之前加载：下面那段在求值时就捕获 window.SRECot，
+     放到后面会捕获到 undefined（这正是之前面板完全不显示的原因） -->
+<script src="/ui/_sre-cot.js"></script>
+<script>
+(function () {
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  let sessionId = null;
+  const messages = document.querySelector('.sre-chat-messages');
+  const input = document.querySelector('.sre-chat-input input');
+  const sendBtn = document.querySelector('.sre-chat-input button');
+
+  function md(text) {
+    if (window.marked && window.DOMPurify) {
+      return DOMPurify.sanitize(marked.parse(text == null ? '' : String(text)));
+    }
+    return null; // markdown libs unavailable → caller falls back to textContent
+  }
+
+  function append(text, cls, asMarkdown) {
+    const empty = messages.querySelector('.sre-chat-empty');
+    if (empty) empty.remove();
+    const div = document.createElement('div');
+    div.className = 'sre-message ' + cls;
+    const inner = document.createElement('div');
+    if (asMarkdown) {
+      const html = md(text);
+      if (html != null) inner.innerHTML = html; else inner.textContent = text;
+    } else {
+      inner.textContent = text;
+    }
+    div.appendChild(inner);
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    return div;
+  }
+
+  // Streaming state: one agent bubble accumulates `token` deltas until `done`.
+  let streamDiv = null;
+  let streamBuf = '';
+  let streamTimer = null;
+  let es = null;
+
+  function renderStream() {
+    if (!streamDiv) return;
+    const inner = streamDiv.firstElementChild;
+    if (!inner) return;
+    const html = md(streamBuf);
+    if (html != null) inner.innerHTML = html; else inner.textContent = streamBuf;
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function onToken(text) {
+    if (!streamDiv) streamDiv = append('', 'sre-message-agent', false);
+    streamBuf += (text || '');
+    if (streamTimer) clearTimeout(streamTimer);
+    streamTimer = setTimeout(renderStream, 30);
+  }
+
+  function onDone(text) {
+    if (streamTimer) clearTimeout(streamTimer);
+    if (streamDiv) {
+      streamBuf = (text == null || text === '') ? streamBuf : text;
+      renderStream();
+      streamDiv = null;
+      streamBuf = '';
+    } else if (text != null && text !== '') {
+      append(text, 'sre-message-agent', true);
+    }
+    sendBtn.disabled = false;
+  }
+
+  // ---- 思维链面板 ----
+  // 渲染逻辑在 /ui/_sre-cot.js（window.SRECot）。这里只负责在合适的时机调它：
+  // 实时步骤随 SSE 追加，回合结束时用回放结果整体校准。
+  const cot = window.SRECot;
+  // 不设静默兜底：模块没加载时必须出声，否则面板只是安静地什么都不做
+  if (!cot) console.error('_sre-cot.js 未加载 —— 思维链面板不会更新');
+
+  // 回合结束时用回放结果校准实时视图：实时那份可能缺尾巴（重绘节流）或多出重复项。
+  function syncCot() {
+    if (!sessionId) return;
+    fetch('/api/sessions/' + encodeURIComponent(sessionId) + '/cot')
+      .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then(d => {
+        if (cot) { cot.render(d.steps || []); }
+        if (cot) cot.setSource(d.steps && d.steps.length ? '回放' : '');
+      })
+      .catch(() => {});
+  }
+
+  async function send() {
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    append(text, 'sre-message-user');
+    sendBtn.disabled = true;
+
+    let data;
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, session_id: sessionId }),
+      });
+      data = await res.json();
+      if (!res.ok) {
+        append('请求失败：' + (data.detail || res.status), 'sre-message-agent');
+        sendBtn.disabled = false; return;
+      }
+    } catch (e) {
+      append('请求失败：' + e, 'sre-message-agent'); sendBtn.disabled = false; return;
+    }
+    sessionId = data.session_id;
+    listen();
+  }
+
+  function listen(quiet) {
+    // 打开历史会话时接流用 quiet：还没有新回复，不该先摆一个「分析中…」气泡
+    if (!quiet) streamDiv = append('分析中...', 'sre-message-agent');
+    streamBuf = '';
+    es = new EventSource('/api/sessions/' + sessionId + '/events');
+    es.onmessage = (e) => {
+      const ev = JSON.parse(e.data);
+      if (ev.type === 'token') {
+        onToken(ev.data);
+      } else if (ev.type === 'cot') {
+        if (cot) { cot.append(ev.data); cot.setSource('实时'); }
+      } else if (ev.type === 'done') {
+        onDone(ev.data); es.close(); syncCot();
+      } else if (ev.type === 'interrupt') {
+        onDone(null); append('⚠ 需要审批：\n' + (ev.data || []).join('\n'), 'sre-message-agent'); es.close();
+      } else if (ev.type === 'error') {
+        onDone(null); append('错误：' + ev.data, 'sre-message-agent'); es.close();
+      } else if (ev.type === 'todos') {
+        append('进度：' + (ev.data || []).map(t => t.content).join(' → '), 'sre-message-agent');
+      }
+    };
+    es.onerror = () => { es.close(); sendBtn.disabled = false; };
+  }
+
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+
+  document.querySelectorAll('.sre-quick-btn').forEach(btn => {
+    btn.addEventListener('click', () => { input.value = btn.textContent.trim(); send(); });
+  });
+
+  fetch('/api/ui/dashboard').then(r => r.json()).then(d => {
+    const items = document.querySelectorAll('.sre-context-item');
+    if (items[2]) { const b = items[2].querySelector('.sre-badge'); if (b) b.textContent = d.alerts_open; }
+    if (items[3]) { const b = items[3].querySelector('.sre-badge'); if (b) b.textContent = d.pending_approvals; }
+  }).catch(() => {});
+
+  // --- session history sidebar ------------------------------------------
+  const historyBox = document.getElementById('sre-session-history');
+
+  function timeAgo(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    const diff = Date.now() - d.getTime();
+    const min = Math.floor(diff / 60000);
+    if (min < 1) return '刚刚';
+    if (min < 60) return min + ' 分钟前';
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return hr + ' 小时前';
+    const day = Math.floor(hr / 24);
+    if (day === 1) return '昨天';
+    if (day < 7) return day + ' 天前';
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + m + '-' + dd;
+  }
+
+  function renderSessions(items) {
+    historyBox.innerHTML = '';
+    if (!items.length) {
+      const empty = document.createElement('div');
+      empty.className = 'sre-text-muted';
+      empty.style.fontSize = '13px';
+      empty.textContent = '暂无历史会话';
+      historyBox.appendChild(empty);
+      return;
+    }
+    items.forEach(s => {
+      const item = document.createElement('div');
+      item.className = 'sre-context-item sre-history-item';
+      const title = document.createElement('span');
+      title.className = 'sre-history-title';
+      title.textContent = s.title || '(未命名会话)';
+      const time = document.createElement('span');
+      time.className = 'sre-text-muted';
+      time.textContent = timeAgo(s.updated_at);
+      item.appendChild(title);
+      item.appendChild(time);
+      item.addEventListener('click', () => openSession(s.id));
+      historyBox.appendChild(item);
+    });
+  }
+
+  function loadSessions() {
+    fetch('/api/sessions').then(r => r.json()).then(d => renderSessions(d.items || [])).catch(() => {});
+  }
+
+  function clearChat() {
+    if (es) { es.close(); es = null; }
+    if (streamTimer) { clearTimeout(streamTimer); streamTimer = null; }
+    messages.innerHTML = '<div class="sre-chat-empty">在此处与agent工作</div>';
+    streamDiv = null;
+    streamBuf = '';
+    if (cot) cot.reset();   // 否则上一个会话的步骤会留在面板里
+  }
+
+  async function openSession(id) {
+    clearChat();
+    sessionId = id;
+    let data, cotData;
+    try {
+      const [resM, resC] = await Promise.all([
+        fetch('/api/sessions/' + encodeURIComponent(id) + '/messages'),
+        fetch('/api/sessions/' + encodeURIComponent(id) + '/cot'),
+      ]);
+      data = await resM.json();
+      cotData = resC.ok ? await resC.json() : null;
+    } catch (e) {
+      append('加载历史失败：' + e, 'sre-message-agent');
+      return;
+    }
+    (data.messages || []).forEach(m => {
+      if (m.role === 'user') append(m.content, 'sre-message-user');
+      else if (m.role === 'assistant') append(m.content, 'sre-message-agent', true);
+    });
+
+    // 回放思维链：从 checkpoint 读，所以本功能上线之前的旧会话同样有内容
+    if (cotData && cotData.steps && cotData.steps.length) {
+      cot.render(cotData.steps);
+      cot.setSource('回放');
+    }
+
+    // 进行中/等待审批的会话要接上流，否则批准后恢复的那一轮永远到不了这里
+    if (cotData && (cotData.status === 'running' || cotData.status === 'interrupted')) {
+      listen(true);
+    }
+  }
+
+  function newSession() {
+    sessionId = null;
+    clearChat();
+    input.focus();
+  }
+
+  const newBtn = document.getElementById('sre-new-session');
+  if (newBtn) newBtn.addEventListener('click', newSession);
+
+  loadSessions();
+})();
+</script>
+  <script src="/ui/_sre-alerts.js"></script>
+  <script src="/ui/_sre-context.js"></script>
+</body>
+</html>

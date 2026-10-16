@@ -1,0 +1,789 @@
+{
+  "namespace": "test-agent",
+  "deployments": [
+    {
+      "name": "accounting",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "ad",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "agent",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "astronomy-db",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "cart",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "chatbot",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "checkout",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "currency",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "email",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "flagd",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "fraud-detection",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "frontend",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "frontend-proxy",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "image-provider",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "kafka",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "load-generator",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "mcp",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "opamp-server",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "otel-collector",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "payment",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "product-catalog",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "quote",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "recommendation",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "shipping",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "telemetry-docs",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    },
+    {
+      "name": "valkey-cart",
+      "ready": 1,
+      "available": 1,
+      "desired": 1
+    }
+  ],
+  "pods": [
+    {
+      "name": "accounting-6565bd7bfd-6k9xp",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "ad-5f6894894b-r4hvs",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "agent-859599fcd8-pqk6f",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "astronomy-db-699755cb8f-2b7nc",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "cart-868994bb8-bc69g",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "chatbot-576b97bf5-h4rzk",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "checkout-5db68d9cf7-6tsj5",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node2"
+    },
+    {
+      "name": "currency-c6958d478-gjwmm",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "email-57d5b49dc4-smwwm",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "flagd-57486b5f48-ptnsg",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "fraud-detection-5df99d754c-nl9z8",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "frontend-6f68f54c79-22lj6",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "frontend-proxy-6f958ffc46-rd9j9",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node2"
+    },
+    {
+      "name": "image-provider-57f95c55f4-n2czb",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "kafka-78d4854f6d-nm68f",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "load-generator-5668d58c59-gkwzs",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node2"
+    },
+    {
+      "name": "mcp-7f99659c77-l6qvt",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node2"
+    },
+    {
+      "name": "opamp-server-57f76979c7-66tgj",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node2"
+    },
+    {
+      "name": "otel-collector-7574494df8-mzdmp",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "payment-759d47f4bb-rwrwc",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "product-catalog-58dc865b7c-v9mkj",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node2"
+    },
+    {
+      "name": "quote-7df4c54496-h786x",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node2"
+    },
+    {
+      "name": "recommendation-8c8f4d7c6-9gpqf",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "shipping-5bc6f87785-v9c5x",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    },
+    {
+      "name": "telemetry-docs-7d46c54c57-98ktf",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node2"
+    },
+    {
+      "name": "valkey-cart-6d7cf58954-8xbd6",
+      "phase": "Running",
+      "ready": 1,
+      "containers": 1,
+      "restarts": 0,
+      "node": "node1"
+    }
+  ],
+  "services": [
+    {
+      "name": "ad",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 9465,
+          "target_port": "9465"
+        },
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "ad"
+      }
+    },
+    {
+      "name": "agent",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8010,
+          "target_port": "8010"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "agent"
+      }
+    },
+    {
+      "name": "astronomy-db",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 5432,
+          "target_port": "5432"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "astronomy-db"
+      }
+    },
+    {
+      "name": "cart",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "cart"
+      }
+    },
+    {
+      "name": "chatbot",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 7860,
+          "target_port": "7860"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "chatbot"
+      }
+    },
+    {
+      "name": "checkout",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "checkout"
+      }
+    },
+    {
+      "name": "currency",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "currency"
+      }
+    },
+    {
+      "name": "email",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "email"
+      }
+    },
+    {
+      "name": "flagd",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8013,
+          "target_port": "8013"
+        },
+        {
+          "port": 8016,
+          "target_port": "8016"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "flagd"
+      }
+    },
+    {
+      "name": "frontend",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "frontend"
+      }
+    },
+    {
+      "name": "frontend-proxy",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "frontend-proxy"
+      }
+    },
+    {
+      "name": "image-provider",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8081,
+          "target_port": "8081"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "image-provider"
+      }
+    },
+    {
+      "name": "kafka",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 9092,
+          "target_port": "9092"
+        },
+        {
+          "port": 9093,
+          "target_port": "9093"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "kafka"
+      }
+    },
+    {
+      "name": "load-generator",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8089,
+          "target_port": "8089"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "load-generator"
+      }
+    },
+    {
+      "name": "mcp",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8011,
+          "target_port": "8011"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "mcp"
+      }
+    },
+    {
+      "name": "opamp-server",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 4320,
+          "target_port": "4320"
+        },
+        {
+          "port": 4321,
+          "target_port": "4321"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "opamp-server"
+      }
+    },
+    {
+      "name": "otel-collector",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 6831,
+          "target_port": "6831"
+        },
+        {
+          "port": 14250,
+          "target_port": "14250"
+        },
+        {
+          "port": 14268,
+          "target_port": "14268"
+        },
+        {
+          "port": 8888,
+          "target_port": "8888"
+        },
+        {
+          "port": 4317,
+          "target_port": "4317"
+        },
+        {
+          "port": 4318,
+          "target_port": "4318"
+        },
+        {
+          "port": 9411,
+          "target_port": "9411"
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/instance": "otel-demo",
+        "app.kubernetes.io/name": "opentelemetry-collector",
+        "component": "standalone-collector"
+      }
+    },
+    {
+      "name": "payment",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "payment"
+      }
+    },
+    {
+      "name": "product-catalog",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "app.kubernetes.io/name": "product-catalog"
+      }
+    },
+    {
+      "name": "quote",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "quote"
+      }
+    },
+    {
+      "name": "recommendation",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "recommendation"
+      }
+    },
+    {
+      "name": "shipping",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8080,
+          "target_port": "8080"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "shipping"
+      }
+    },
+    {
+      "name": "telemetry-docs",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 8000,
+          "target_port": "8000"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "telemetry-docs"
+      }
+    },
+    {
+      "name": "valkey-cart",
+      "type": "ClusterIP",
+      "ports": [
+        {
+          "port": 6379,
+          "target_port": "6379"
+        }
+      ],
+      "selector": {
+        "opentelemetry.io/name": "valkey-cart"
+      }
+    }
+  ],
+  "warning_events": [
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-2qz2r",
+      "message": "Failed to pull image \"quay.io/it-bench/hello-bench-arm64:2.0.0\": rpc error: code = NotFound desc = get image config descriptor: no match for platform in manifest sha256:7cd7851269cbcae48104bbee9493cf5d562e646a4d76fde1bb8bc0608e21f6e2: not found"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-2qz2r",
+      "message": "Error: ErrImagePull"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-2qz2r",
+      "message": "Error: ImagePullBackOff"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-77wkp",
+      "message": "Failed to pull image \"quay.io/it-bench/hello-bench-arm64:2.0.0\": rpc error: code = NotFound desc = get image config descriptor: no match for platform in manifest sha256:7cd7851269cbcae48104bbee9493cf5d562e646a4d76fde1bb8bc0608e21f6e2: not found"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-77wkp",
+      "message": "Error: ErrImagePull"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-77wkp",
+      "message": "Error: ImagePullBackOff"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-clgg2",
+      "message": "Failed to pull image \"quay.io/it-bench/hello-bench-arm64:2.0.0\": rpc error: code = NotFound desc = get image config descriptor: no match for platform in manifest sha256:7cd7851269cbcae48104bbee9493cf5d562e646a4d76fde1bb8bc0608e21f6e2: not found"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-clgg2",
+      "message": "Error: ErrImagePull"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-clgg2",
+      "message": "Error: ImagePullBackOff"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-zlxh5",
+      "message": "Failed to pull image \"quay.io/it-bench/hello-bench-arm64:2.0.0\": rpc error: code = NotFound desc = get image config descriptor: no match for platform in manifest sha256:7cd7851269cbcae48104bbee9493cf5d562e646a4d76fde1bb8bc0608e21f6e2: not found"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-zlxh5",
+      "message": "Error: ErrImagePull"
+    },
+    {
+      "reason": "Failed",
+      "object": "checkout-69d7c967bc-zlxh5",
+      "message": "Error: ImagePullBackOff"
+    }
+  ]
+}

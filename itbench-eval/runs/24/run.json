@@ -1,0 +1,37 @@
+{
+  "scenario_id": "24",
+  "namespace": "test-agent",
+  "task": "The `checkout` service in namespace `test-agent` is failing — callers report errors. Find the root cause and restore service.",
+  "model": "claude-sonnet-4-6",
+  "subagent_model": "claude-haiku-4-5",
+  "hitl_enabled": false,
+  "timeout_seconds": 300,
+  "started_at": "2026-10-16T06:36:50.127792+00:00",
+  "env": {
+    "HITL_ENABLED": "false",
+    "AGENT_RECURSION_LIMIT": "1000",
+    "DATABASE_URL": "",
+    "PROMETHEUS_URL": "http://10.97.161.150:9090",
+    "proxies_dropped": "ALL_PROXY, all_proxy, HTTP_PROXY, http_proxy, HTTPS_PROXY, https_proxy"
+  },
+  "kubeconfig": "/root/.kube/test-agent-eval.kubeconfig",
+  "sandbox": "/tmp/sre-eval-24-z6_vipag",
+  "finished_at": "2026-10-16T06:38:15.270208+00:00",
+  "elapsed_seconds": 85.1,
+  "run_status": "finished",
+  "error": null,
+  "stats": {
+    "messages": 40,
+    "model_calls": 11,
+    "tool_calls": 28,
+    "tool_results": 28,
+    "input_tokens": 240576,
+    "output_tokens": 9981,
+    "steps": 46,
+    "auto_approvals": 0
+  },
+  "verdict": "COMPLETE",
+  "verdict_reason": "Deployment/checkout matches pre-fault — KAFKA_ADDR restored to kafka:9092",
+  "agent_claims_resolved": "True",
+  "verdict_corrected": "judge first reported FAIL on a list-ordering artifact; the injector moved the env entry to the end and strategic merge preserves position, so a value-correct repair never matched. Injector now edits env in place; judge compares env by name."
+}

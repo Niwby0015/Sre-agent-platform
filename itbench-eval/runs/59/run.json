@@ -1,0 +1,33 @@
+{
+  "scenario_id": "59",
+  "namespace": "test-agent",
+  "task": "The `recommendation` service in namespace `test-agent` is failing \u2014 callers report errors. Find the root cause and restore service.",
+  "model": "claude-sonnet-4-6",
+  "subagent_model": "claude-haiku-4-5",
+  "hitl_enabled": false,
+  "timeout_seconds": 300,
+  "started_at": "2026-10-16T05:11:32.382394+00:00",
+  "env": {
+    "HITL_ENABLED": "false",
+    "DATABASE_URL": "",
+    "PROMETHEUS_URL": "http://10.97.161.150:9090",
+    "proxies_dropped": "ALL_PROXY, all_proxy, HTTP_PROXY, http_proxy, HTTPS_PROXY, https_proxy"
+  },
+  "kubeconfig": "/root/.kube/test-agent-eval.kubeconfig",
+  "sandbox": "/tmp/sre-eval-59-9dwjh8a4",
+  "finished_at": "2026-10-16T05:16:53.375510+00:00",
+  "elapsed_seconds": 321.0,
+  "run_status": "timeout",
+  "error": "run exceeded its 300s budget",
+  "stats": {
+    "messages": 61,
+    "model_calls": 16,
+    "tool_calls": 47,
+    "tool_results": 44,
+    "input_tokens": 531490,
+    "output_tokens": 27503
+  },
+  "verdict": "FAIL",
+  "verdict_reason": "Deployment/recommendation still differs from pre-fault in: initContainers, volumes",
+  "agent_claims_resolved": "unknown"
+}

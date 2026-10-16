@@ -1,0 +1,36 @@
+{
+  "scenario_id": "20",
+  "namespace": "test-agent",
+  "task": "The `product-catalog` service in namespace `test-agent` is failing — callers report errors. Find the root cause and restore service.",
+  "model": "claude-sonnet-4-6",
+  "subagent_model": "claude-haiku-4-5",
+  "hitl_enabled": false,
+  "timeout_seconds": 300,
+  "started_at": "2026-10-15T12:13:52.844695+00:00",
+  "env": {
+    "HITL_ENABLED": "false",
+    "DATABASE_URL": "",
+    "PROMETHEUS_URL": "http://10.97.161.150:9090",
+    "proxies_dropped": "ALL_PROXY, all_proxy, HTTP_PROXY, http_proxy, HTTPS_PROXY, https_proxy"
+  },
+  "kubeconfig": "/root/.kube/test-agent-eval.kubeconfig",
+  "sandbox": "/tmp/sre-eval-20-e92z3e2u",
+  "finished_at": "2026-10-15T12:19:04.151387+00:00",
+  "elapsed_seconds": 311.3,
+  "error": null,
+  "stats": {
+    "messages": 68,
+    "model_calls": 18,
+    "tool_calls": 49,
+    "tool_results": 49,
+    "input_tokens": 579574,
+    "output_tokens": 19788,
+    "steps": 76,
+    "auto_approvals": 0
+  },
+  "verdict": "COMPLETE",
+  "verdict_reason": "target objects match pre-fault and are serving",
+  "agent_claims_resolved": true,
+  "reconstructed": "verdict from the batch console line; drive.py wrote verdicts only after this run started",
+  "run_status": "finished"
+}

@@ -1,0 +1,28 @@
+
+Service is restored and verified.
+
+**What had happened:** `Deployment/product-catalog` (revision 10) had its container image mutated to `quay.io/it-bench/hello-bench-amd64:1.0.0rc1`. That image cannot be pulled in this cluster (`403 Forbidden` from the registry mirror), so the new ReplicaSet `product-catalog-cb65f5595` never produced a ready pod: `ErrImagePull` → `ImagePullBackOff`, the rolling update stalled, and `Service/product-catalog` was left degraded with its replacement pod permanently unavailable — the only Warning events in the namespace. The still-serving pod was the pre-existing healthy one (`ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-product-catalog`), which is why sibling components in this release (all on `ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-<component>`, per the Helm `otel-demo` values and every other workload) identified the correct image.
+
+**Fix applied** (smallest change — image field only, via change-executor): set the `product-catalog` container image back to `ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-product-catalog`.
+
+**Verification (re-read after the change):** Deployment now reports `desired=1, ready=1, available=1` with image `ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-product-catalog`, progressing on the healthy ReplicaSet `58dc865b7c`; the `ErrImagePull` pod is gone; `Service/product-catalog` endpoints read `1 ready / 0 not-ready` (OK); no new Warning events (the remaining ones are historical, all naming the deleted `cb65f5595` pods); rollout history revision 11 carries the correct image. No other workload was touched.
+
+```json
+{
+  "root_cause": "Deployment/product-catalog specified container image quay.io/it-bench/hello-bench-amd64:1.0.0rc1, which cannot be pulled (403 Forbidden), leaving the new ReplicaSet stuck in ErrImagePull/ImagePullBackOff and the product-catalog Service degraded instead of the correct image ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-product-catalog",
+  "evidence": [
+    "kubectl_get_events(warning_only) showed only image failures: Pod/product-catalog-cb65f5595-* 'Failed to pull image quay.io/it-bench/hello-bench-amd64:1.0.0rc1' -> ErrImagePull/ImagePullBackOff",
+    "kubectl_describe_pod product-catalog-cb65f5595-6rzmx: Waiting: ErrImagePull, 'unexpected status from HEAD request to https://quay.m.daocloud.io/v2/it-bench/hello-bench-amd64/manifests/1.0.0rc1?ns=quay.io: 403 Forbidden'",
+    "kubectl_describe_deployment product-catalog: image=quay.io/it-bench/hello-bench-amd64:1.0.0rc1, Progressing on ReplicaSet product-catalog-cb65f5595 (stuck rollout)",
+    "kubectl_get_endpoints: Service/product-catalog 'degraded (1 not-ready)' while every other service was OK",
+    "kubectl_audit_image_tags: the running Ready pod product-catalog-58dc865b7c-v9mkj runs ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-product-catalog; all 23 other components run ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-<component>",
+    "helm_get_release_values (release otel-demo): default.image.repository=ghcr.nju.edu.cn/open-telemetry/demo — the quay.io/it-bench registry appears nowhere in the release",
+    "kubectl_rollout_history: revision 9 = ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-product-catalog, revision 10 = the unpullable quay.io/it-bench image"
+  ],
+  "actions": [
+    {"tool": "kubectl_apply_manifest (via change-executor)", "target": "deployment/product-catalog", "result": "applied"}
+  ],
+  "verification": "Re-read the changed resources: Deployment/product-catalog image is now ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-product-catalog with 1/1 ready, 1/1 available and 'ReplicaSet product-catalog-58dc865b7c has successfully progressed'; rollout history revision 11 carries the correct image; kubectl_get_pods shows only the Running/Ready pod product-catalog-58dc865b7c-v9mkj (the ErrImagePull pod is gone); kubectl_get_endpoints shows product-catalog 1 ready / 0 not-ready (OK); kubectl_get_events(warning_only) shows no new warnings (remaining entries are historical events for the deleted cb65f5595 pods).",
+  "resolved": true
+}
+```

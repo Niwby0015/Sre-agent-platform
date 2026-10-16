@@ -1,0 +1,10 @@
+{
+  "run_status": "killed",
+  "elapsed_seconds": 345,
+  "stats": {
+    "tool_calls": 53
+  },
+  "verdict": "FAIL",
+  "verdict_reason": "Deployment/frontend still differs from pre-fault in: dnsPolicy",
+  "agent_claims_resolved": "unknown"
+}

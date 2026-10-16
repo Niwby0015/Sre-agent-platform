@@ -1,0 +1,185 @@
+[
+  {
+    "action": "patch",
+    "kind": "Deployment",
+    "name": "frontend",
+    "namespace": "test-agent",
+    "before": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "frontend",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "frontend",
+          "app.kubernetes.io/part-of": "opentelemetry-demo",
+          "app.kubernetes.io/version": "3.1.0",
+          "helm.sh/chart": "opentelemetry-demo-0.42.3",
+          "opentelemetry.io/name": "frontend"
+        },
+        "name": "frontend",
+        "namespace": "test-agent"
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "opentelemetry.io/name": "frontend"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "annotations": {
+              "resource.opentelemetry.io/service.namespace": "opentelemetry-demo"
+            },
+            "labels": {
+              "app.kubernetes.io/component": "frontend",
+              "app.kubernetes.io/name": "frontend",
+              "app.kubernetes.io/version": "3.1.0",
+              "opentelemetry.io/name": "frontend"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "OTEL_SERVICE_NAME",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.labels['app.kubernetes.io/component']"
+                      }
+                    }
+                  },
+                  {
+                    "name": "OTEL_COLLECTOR_NAME",
+                    "value": "otel-collector"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE",
+                    "value": "cumulative"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_DEFAULT_HISTOGRAM_AGGREGATION",
+                    "value": "explicit_bucket_histogram"
+                  },
+                  {
+                    "name": "FRONTEND_PORT",
+                    "value": "8080"
+                  },
+                  {
+                    "name": "PORT",
+                    "value": "$(FRONTEND_PORT)"
+                  },
+                  {
+                    "name": "FRONTEND_ADDR",
+                    "value": "frontend:8080"
+                  },
+                  {
+                    "name": "AD_ADDR",
+                    "value": "ad:8080"
+                  },
+                  {
+                    "name": "CART_ADDR",
+                    "value": "cart:8080"
+                  },
+                  {
+                    "name": "CHECKOUT_ADDR",
+                    "value": "checkout:8080"
+                  },
+                  {
+                    "name": "CURRENCY_ADDR",
+                    "value": "currency:8080"
+                  },
+                  {
+                    "name": "PRODUCT_CATALOG_ADDR",
+                    "value": "product-catalog:8080"
+                  },
+                  {
+                    "name": "RECOMMENDATION_ADDR",
+                    "value": "recommendation:8080"
+                  },
+                  {
+                    "name": "SHIPPING_ADDR",
+                    "value": "http://shipping:8080"
+                  },
+                  {
+                    "name": "FLAGD_HOST",
+                    "value": "flagd"
+                  },
+                  {
+                    "name": "FLAGD_PORT",
+                    "value": "8013"
+                  },
+                  {
+                    "name": "ENV_PLATFORM",
+                    "value": "kubernetes"
+                  },
+                  {
+                    "name": "OTEL_COLLECTOR_HOST",
+                    "value": "$(OTEL_COLLECTOR_NAME)"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+                    "value": "http://$(OTEL_COLLECTOR_NAME):4317"
+                  },
+                  {
+                    "name": "WEB_OTEL_SERVICE_NAME",
+                    "value": "frontend-web"
+                  },
+                  {
+                    "name": "PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+                    "value": "http://localhost:8080/otlp-http/v1/traces"
+                  },
+                  {
+                    "name": "OTEL_RESOURCE_ATTRIBUTES",
+                    "value": "service.version=3.1.0,service.criticality=critical"
+                  }
+                ],
+                "image": "ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-frontend",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "frontend",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "service",
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "limits": {
+                    "memory": "250Mi"
+                  }
+                },
+                "securityContext": {
+                  "runAsGroup": 1001,
+                  "runAsNonRoot": true,
+                  "runAsUser": 1001
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "otel-demo",
+            "serviceAccountName": "otel-demo",
+            "terminationGracePeriodSeconds": 30
+          }
+        }
+      }
+    }
+  }
+]

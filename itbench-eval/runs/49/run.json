@@ -1,0 +1,36 @@
+{
+  "scenario_id": "49",
+  "namespace": "test-agent",
+  "task": "The `frontend` service in namespace `test-agent` is failing \u2014 callers report errors. Find the root cause and restore service.",
+  "model": "claude-sonnet-4-6",
+  "subagent_model": "claude-haiku-4-5",
+  "hitl_enabled": false,
+  "timeout_seconds": 300,
+  "started_at": "2026-10-16T06:50:25.517995+00:00",
+  "env": {
+    "HITL_ENABLED": "false",
+    "AGENT_RECURSION_LIMIT": "1000",
+    "DATABASE_URL": "",
+    "PROMETHEUS_URL": "http://10.97.161.150:9090",
+    "proxies_dropped": "ALL_PROXY, all_proxy, HTTP_PROXY, http_proxy, HTTPS_PROXY, https_proxy"
+  },
+  "kubeconfig": "/root/.kube/test-agent-eval.kubeconfig",
+  "sandbox": "/tmp/sre-eval-49-aulzlh67",
+  "finished_at": "2026-10-16T06:55:14.353941+00:00",
+  "elapsed_seconds": 288.8,
+  "run_status": "finished",
+  "error": null,
+  "stats": {
+    "messages": 79,
+    "model_calls": 24,
+    "tool_calls": 54,
+    "tool_results": 54,
+    "input_tokens": 1139992,
+    "output_tokens": 36087,
+    "steps": 104,
+    "auto_approvals": 0
+  },
+  "verdict": "COMPLETE",
+  "verdict_reason": "target objects match pre-fault and are serving",
+  "agent_claims_resolved": "True"
+}

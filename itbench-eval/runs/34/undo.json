@@ -1,0 +1,32 @@
+[
+  {
+    "action": "patch",
+    "kind": "Secret",
+    "name": "valkey-credentials",
+    "namespace": "test-agent",
+    "before": {
+      "apiVersion": "v1",
+      "data": {
+        "valkey-password": ""
+      },
+      "kind": "Secret",
+      "metadata": {
+        "name": "valkey-credentials",
+        "namespace": "test-agent"
+      },
+      "type": "Opaque"
+    },
+    "pristine": {
+      "apiVersion": "v1",
+      "data": {
+        "valkey-password": ""
+      },
+      "kind": "Secret",
+      "metadata": {
+        "name": "valkey-credentials",
+        "namespace": "test-agent"
+      },
+      "type": "Opaque"
+    }
+  }
+]

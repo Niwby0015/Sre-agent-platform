@@ -1,0 +1,31 @@
+
+Shipping is restored and independently verified.
+
+**What was wrong:** the `shipping` Deployment's `QUOTE_ADDR` env var had been changed to `quote:0000` — not a resolvable URL for the `quote` dependency. Shipping's own logs showed the consequences directly: the new pod logged `Requesting quote quote_service_addr="quote:0000/getquote"` and never produced a `Sending Quote`, while the pod that had served healthily for 18 h before the incident logged `http://quote:8080/getquote` → `Sending Quote` → `Tracking ID Created`.
+
+**Repair:** one env value, restored to `http://quote:8080`.
+
+Two details worth calling out, since a partial fix would have left the service broken:
+- My first patch set `quote:8080` (port fixed, scheme missing). Verification caught it: the pod logged `quote:8080/getquote` and still produced no `Sending Quote`, because this app appends `/getquote` to the raw value and a schemeless value is not a valid URL. The value must carry `http://` — exactly what the pre-incident pod logged.
+- I checked the whole object, not just the symptom: no `nodeSelector`/`affinity`/`tolerations` were added, and the rollout landed on ReplicaSet `shipping-5bc6f87785` — the *same* pod-template hash as the ReplicaSet that served before the incident, i.e. the entire pod template is now byte-identical to the pre-incident one. The `wait-for-flagd` init container is chart-normal (peers carry `wait-for-kafka` / `wait-for-astronomy-db`), and no Service selector, port, HPA, quota, LimitRange or NetworkPolicy is involved.
+
+The remaining Warning events (`checkout` `hello-bench-arm64` ImagePullBackOff, a `frontend` probe failure) reference pods that no longer exist; both those workloads are currently 1/1 Ready with healthy endpoints and are unrelated to shipping.
+
+```json
+{
+  "root_cause": "The shipping Deployment's container env var QUOTE_ADDR was set to the invalid value \"quote:0000\" (the correct value is \"http://quote:8080\"), so the shipping service could not reach the quote service and all quote requests failed.",
+  "evidence": [
+    "shipping pod logs before fix: 'Requesting quote quote_service_addr=\"quote:0000/getquote\"' with no subsequent 'Sending Quote' — every quote call failed",
+    "the pre-incident shipping pod (shipping-5bc6f87785-v9c5x, serving 18h) logged 'quote_service_addr=\"http://quote:8080/getquote\"' followed by 'Sending Quote' and 'Tracking ID Created', establishing the original value and that the env value includes the http:// scheme",
+    "Deployment revision 10 had QUOTE_ADDR=quote:0000; Service quote exposes port 8080, so port 0000 is unreachable; the app builds the URL as '<QUOTE_ADDR>/getquote', so a value without a scheme is an invalid URL",
+    "after patching to 'quote:8080' the pod logged 'quote:8080/getquote' and still never logged 'Sending Quote' — confirming the scheme is part of the value",
+    "live spec re-read: no nodeSelector/affinity/tolerations added; init container 'wait-for-flagd' matches the chart pattern used by peers (checkout 'wait-for-kafka', product-catalog 'wait-for-astronomy-db'); image, ports, serviceAccount, volumes, resources unchanged"
+  ],
+  "actions": [
+    {"tool": "change-executor", "target": "deployment/shipping", "result": "applied"},
+    {"tool": "change-executor", "target": "deployment/shipping", "result": "applied"}
+  ],
+  "verification": "Re-read the live shipping Deployment (revision 12): QUOTE_ADDR is 'http://quote:8080' and the pod template is otherwise unchanged. describe_deployment shows Replicas desired=1 ready=1 available=1, Available=True, and Progressing=True for ReplicaSet 'shipping-5bc6f87785' — the same pod-template hash as the pre-incident ReplicaSet, so the whole template matches the original configuration. Pod shipping-5bc6f87785-dxs96 is Running with Initialized/Ready/ContainersReady=True, 0 restarts, and its logs now show the full healthy sequence twice ('Requesting quote ... http://quote:8080/getquote' -> 'Sending Quote dollars=8 cents=99', and '... -> Sending Quote -> Tracking ID Created'). Endpoints for service shipping are 1 ready / 0 not-ready, and no Warning event references shipping.",
+  "resolved": true
+}
+```

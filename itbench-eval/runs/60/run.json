@@ -1,0 +1,10 @@
+{
+  "run_status": "killed",
+  "elapsed_seconds": 345,
+  "stats": {
+    "tool_calls": 42
+  },
+  "verdict": "FAIL",
+  "verdict_reason": "Deployment/recommendation still differs from pre-fault in: initContainers, volumes",
+  "agent_claims_resolved": "unknown"
+}

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>总览</title>
+    <style id="theme-vars">
+/* SRE-Agent UI — light ops console tokens */
+
+:root {
+  /* Neutral foundation */
+  --sre-background: #ffffff;
+  --sre-foreground: #1f2937;
+  --sre-card: #ffffff;
+  --sre-card-foreground: #1f2937;
+  --sre-popover: #ffffff;
+  --sre-popover-foreground: #1f2937;
+  --sre-muted: #f3f4f6;
+  --sre-muted-foreground: #6b7280;
+  --sre-border: #e5e7eb;
+  --sre-input: #f9fafb;
+  --sre-ring: #0891b2;
+
+  /* Brand primary — cyan */
+  --sre-primary: #0e7490;
+  --sre-primary-foreground: #ffffff;
+  --sre-primary-hover: #155e75;
+  --sre-primary-subtle: rgba(14, 116, 144, 0.10);
+
+  /* Semantic surfaces */
+  --sre-surface: #ffffff;
+  --sre-surface-2: #f3f4f6;
+  --sre-surface-3: #e5e7eb;
+  --sre-line: #e5e7eb;
+
+  /* State colors */
+  --sre-state-success: #16a34a;
+  --sre-state-success-subtle: rgba(22, 163, 74, 0.12);
+  --sre-state-warning: #d97706;
+  --sre-state-warning-subtle: rgba(217, 119, 6, 0.12);
+  --sre-state-error: #dc2626;
+  --sre-state-error-subtle: rgba(220, 38, 38, 0.12);
+  --sre-state-info: #2563eb;
+  --sre-state-info-subtle: rgba(37, 99, 235, 0.12);
+
+  /* Radius */
+  --sre-radius-small: 4px;
+  --sre-radius-medium: 8px;
+  --sre-radius-large: 12px;
+
+  /* Typography */
+  --sre-font-sans: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --sre-font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+}
+
+.light {
+  color-scheme: light;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--sre-background);
+    --color-foreground: var(--sre-foreground);
+    --color-card: var(--sre-card);
+    --color-card-foreground: var(--sre-card-foreground);
+    --color-popover: var(--sre-popover);
+    --color-popover-foreground: var(--sre-popover-foreground);
+    --color-primary: var(--sre-primary);
+    --color-primary-foreground: var(--sre-primary-foreground);
+    --color-muted: var(--sre-muted);
+    --color-muted-foreground: var(--sre-muted-foreground);
+    --color-border: var(--sre-border);
+    --color-input: var(--sre-input);
+    --color-ring: var(--sre-ring);
+    --radius-sm: var(--sre-radius-small);
+    --radius-md: var(--sre-radius-medium);
+    --radius-lg: var(--sre-radius-large);
+  }
+  @layer base {
+    body { background: var(--sre-background); color: var(--sre-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--sre-background); }
+      .text-background { color: var(--sre-background); }
+      .border-background { border-color: var(--sre-background); }
+      .ring-background { --tw-ring-color: var(--sre-background); }
+      .bg-foreground { background-color: var(--sre-foreground); }
+      .text-foreground { color: var(--sre-foreground); }
+      .border-foreground { border-color: var(--sre-foreground); }
+      .ring-foreground { --tw-ring-color: var(--sre-foreground); }
+      .bg-card { background-color: var(--sre-card); }
+      .text-card { color: var(--sre-card); }
+      .border-card { border-color: var(--sre-card); }
+      .ring-card { --tw-ring-color: var(--sre-card); }
+      .bg-card-foreground { background-color: var(--sre-card-foreground); }
+      .text-card-foreground { color: var(--sre-card-foreground); }
+      .border-card-foreground { border-color: var(--sre-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--sre-card-foreground); }
+      .bg-popover { background-color: var(--sre-popover); }
+      .text-popover { color: var(--sre-popover); }
+      .border-popover { border-color: var(--sre-popover); }
+      .ring-popover { --tw-ring-color: var(--sre-popover); }
+      .bg-popover-foreground { background-color: var(--sre-popover-foreground); }
+      .text-popover-foreground { color: var(--sre-popover-foreground); }
+      .border-popover-foreground { border-color: var(--sre-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--sre-popover-foreground); }
+      .bg-primary { background-color: var(--sre-primary); }
+      .text-primary { color: var(--sre-primary); }
+      .border-primary { border-color: var(--sre-primary); }
+      .ring-primary { --tw-ring-color: var(--sre-primary); }
+      .bg-primary-foreground { background-color: var(--sre-primary-foreground); }
+      .text-primary-foreground { color: var(--sre-primary-foreground); }
+      .border-primary-foreground { border-color: var(--sre-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--sre-primary-foreground); }
+      .bg-muted { background-color: var(--sre-muted); }
+      .text-muted { color: var(--sre-muted); }
+      .border-muted { border-color: var(--sre-muted); }
+      .ring-muted { --tw-ring-color: var(--sre-muted); }
+      .bg-muted-foreground { background-color: var(--sre-muted-foreground); }
+      .text-muted-foreground { color: var(--sre-muted-foreground); }
+      .border-muted-foreground { border-color: var(--sre-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--sre-muted-foreground); }
+      .bg-border { background-color: var(--sre-border); }
+      .text-border { color: var(--sre-border); }
+      .border-border { border-color: var(--sre-border); }
+      .ring-border { --tw-ring-color: var(--sre-border); }
+      .bg-input { background-color: var(--sre-input); }
+      .text-input { color: var(--sre-input); }
+      .border-input { border-color: var(--sre-input); }
+      .ring-input { --tw-ring-color: var(--sre-input); }
+      .bg-ring { background-color: var(--sre-ring); }
+      .text-ring { color: var(--sre-ring); }
+      .border-ring { border-color: var(--sre-ring); }
+      .ring-ring { --tw-ring-color: var(--sre-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <style>
+  .sre-shell { display: flex; min-height: 100vh; background: var(--sre-background); color: var(--sre-foreground); font-family: var(--sre-font-sans); }
+  .sre-topbar { position: fixed; inset: 0 0 auto 0; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--sre-surface); border-bottom: 1px solid var(--sre-line); z-index: 50; }
+  .sre-topbar-left, .sre-topbar-right { display: flex; align-items: center; gap: 16px; }
+  .sre-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -0.02em; }
+  .sre-logo-mark { width: 28px; height: 28px; border-radius: var(--sre-radius-medium); background: var(--sre-primary); color: var(--sre-primary-foreground); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .sre-select { height: 32px; padding: 0 28px 0 12px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 13px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+  .sre-search { width: 240px; height: 32px; padding: 0 12px 0 32px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 13px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 10px center; }
+  .sre-icon-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--sre-radius-medium); background: transparent; border: 1px solid var(--sre-border); color: var(--sre-muted-foreground); cursor: pointer; }
+  .sre-avatar { width: 30px; height: 30px; border-radius: 9999px; background: var(--sre-surface-3); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; color: var(--sre-muted-foreground); border: 1px solid var(--sre-border); }
+  .sre-sidebar { position: fixed; top: 56px; left: 0; bottom: 0; width: 220px; padding: 16px 12px; background: var(--sre-surface); border-right: 1px solid var(--sre-line); display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+  .sre-nav-item { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-radius: var(--sre-radius-medium); color: var(--sre-muted-foreground); font-size: 14px; text-decoration: none; transition: background 120ms ease, color 120ms ease; }
+  .sre-nav-item:hover { background: var(--sre-surface-2); color: var(--sre-foreground); }
+  .sre-nav-item[data-active="true"] { background: var(--sre-primary-subtle); color: var(--sre-primary); }
+  .sre-nav-item i { width: 18px; height: 18px; }
+  .sre-nav-group { display: flex; flex-direction: column; }
+  .sre-nav-group-label { cursor: default; }
+  .sre-nav-group-label:hover { background: transparent; color: var(--sre-muted-foreground); }
+  .sre-nav-sub { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 6px 9px; padding-left: 16px; border-left: 1px solid var(--sre-border); }
+  .sre-nav-sub-item { height: 34px; font-size: 13px; padding-left: 10px; }
+  .sre-main { margin-left: 220px; margin-top: 56px; min-height: calc(100vh - 56px); padding: 24px; flex: 1 1 auto; min-width: 0; }
+  .sre-card { background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); }
+  .sre-section-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; }
+  .sre-kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .sre-kpi { padding: 20px; }
+  .sre-kpi-value { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .sre-kpi-label { font-size: 13px; color: var(--sre-muted-foreground); margin-top: 6px; }
+  .sre-kpi-delta { font-size: 12px; margin-top: 8px; }
+  .sre-list { display: flex; flex-direction: column; }
+  .sre-list-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--sre-border); gap: 12px; }
+  .sre-list-row:last-child { border-bottom: none; }
+  .sre-list-meta { font-size: 13px; color: var(--sre-muted-foreground); }
+  .sre-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--sre-radius-medium); font-size: 12px; font-weight: 600; }
+  .sre-badge-error { background: var(--sre-state-error-subtle); color: var(--sre-state-error); }
+  .sre-badge-warning { background: var(--sre-state-warning-subtle); color: var(--sre-state-warning); }
+  .sre-badge-success { background: var(--sre-state-success-subtle); color: var(--sre-state-success); }
+  .sre-badge-info { background: var(--sre-state-info-subtle); color: var(--sre-state-info); }
+  .sre-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: var(--sre-radius-medium); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 120ms ease; }
+  .sre-btn-primary { background: var(--sre-primary); color: var(--sre-primary-foreground); }
+  .sre-btn-primary:hover { background: var(--sre-primary-hover); }
+  .sre-btn-secondary { background: var(--sre-surface-2); color: var(--sre-foreground); border: 1px solid var(--sre-border); }
+  .sre-btn-secondary:hover { background: var(--sre-surface-3); }
+  .sre-btn-sm { height: 30px; padding: 0 12px; font-size: 13px; }
+  .sre-input { height: 40px; padding: 0 12px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 14px; }
+  .sre-text-muted { color: var(--sre-muted-foreground); }
+  .sre-text-tertiary { color: var(--sre-muted-foreground); font-size: 13px; }
+  .sre-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .sre-table th, .sre-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--sre-border); }
+  .sre-table th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sre-muted-foreground); font-weight: 600; }
+  .sre-table tr:last-child td { border-bottom: none; }
+  .sre-empty { padding: 48px; text-align: center; color: var(--sre-muted-foreground); }
+  .sre-two-col { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 24px; }
+  .sre-progress { height: 6px; border-radius: 9999px; background: var(--sre-surface-2); overflow: hidden; margin-top: 8px; }
+  .sre-progress-bar { height: 100%; border-radius: 9999px; background: var(--sre-primary); }
+  .sre-shortcut-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+</style>
+
+<div class="sre-shell">
+  <header class="sre-topbar">
+    <div class="sre-topbar-left">
+      <div class="sre-logo">
+        <span class="sre-logo-mark">SRE</span>
+        <span>AI-SRE</span>
+      </div>
+      <select class="sre-select" aria-label="集群">
+        <option>prod-cluster-01</option>
+        <option>staging-cluster</option>
+      </select>
+    </div>
+    <div class="sre-topbar-right">
+      <input class="sre-search" type="search" placeholder="搜索 Pod / 节点 / Runbook" />
+      <button class="sre-icon-btn" aria-label="通知"><i data-lucide="bell" style="width:16px;height:16px"></i></button>
+      <span class="sre-avatar">OP</span>
+    </div>
+  </header>
+
+  <nav class="sre-sidebar">
+    <a href="dashboard.html" class="sre-nav-item" data-nav-key="dashboard" data-dom-id="nav-dashboard" data-active="true"><i data-lucide="layout-dashboard"></i> 总览</a>
+    <div class="sre-nav-group">
+      <div class="sre-nav-item sre-nav-group-label"><i data-lucide="message-square"></i> 智能助手</div>
+      <div class="sre-nav-sub">
+        <a href="workbench.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="workbench" data-dom-id="nav-workbench">工作台</a>
+        <a href="skillhub.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="skillhub" data-dom-id="nav-skillhub">技能中心</a>
+      </div>
+    </div>
+    <a href="runbooks.html" class="sre-nav-item" data-nav-key="runbooks" data-dom-id="nav-runbooks"><i data-lucide="book-open"></i> Runbook 资料库</a>
+    <a href="health.html" class="sre-nav-item" data-nav-key="health" data-dom-id="nav-health"><i data-lucide="activity"></i> 健康检查</a>
+    <div class="sre-nav-group">
+      <div class="sre-nav-item sre-nav-group-label"><i data-lucide="bar-chart-3"></i> 数据中心</div>
+      <div class="sre-nav-sub">
+        <a href="datacenter.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="datacenter" data-dom-id="nav-datacenter">总览</a>
+        <a href="datacenter-pods.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-pods" data-dom-id="nav-dc-pods">Pod</a>
+        <a href="datacenter-workloads.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-workloads" data-dom-id="nav-dc-workloads">工作负载</a>
+        <a href="datacenter-nodes.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-nodes" data-dom-id="nav-dc-nodes">节点</a>
+        <a href="datacenter-storage.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-storage" data-dom-id="nav-dc-storage">存储</a>
+      </div>
+    </div>
+    <a href="alerts.html" class="sre-nav-item" data-nav-key="alerts" data-dom-id="nav-alerts"><i data-lucide="bell-ring"></i> 告警中心</a>
+    <a href="approvals.html" class="sre-nav-item" data-nav-key="approvals" data-dom-id="nav-approvals"><i data-lucide="shield-check"></i> 审批中心</a>
+    <a href="audit.html" class="sre-nav-item" data-nav-key="audit" data-dom-id="nav-audit"><i data-lucide="clipboard-list"></i> 审计日志</a>
+  </nav>
+
+  <main class="sre-main">
+    <h1 class="sre-section-title">集群总览</h1>
+    <div class="sre-kpi-grid">
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" style="color:var(--sre-state-success)">94</div>
+        <div class="sre-kpi-label">健康评分</div>
+        <div class="sre-kpi-delta sre-text-muted">较上次 +2</div>
+      </div>
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value">1,247</div>
+        <div class="sre-kpi-label">运行 Pod</div>
+        <div class="sre-kpi-delta sre-text-muted">32 个 Pending</div>
+      </div>
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" style="color:var(--sre-state-error)">3</div>
+        <div class="sre-kpi-label">待处理告警</div>
+        <div class="sre-kpi-delta sre-text-muted">2 个 CRITICAL</div>
+      </div>
+      <div class="sre-card sre-kpi">
+        <div class="sre-kpi-value" style="color:var(--sre-state-warning)">2</div>
+        <div class="sre-kpi-label">待审批变更</div>
+        <div class="sre-kpi-delta sre-text-muted">等待人工确认</div>
+      </div>
+    </div>
+
+    <div class="sre-two-col">
+      <div class="sre-card" style="padding:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h2 class="sre-section-title" style="margin:0">最近告警</h2>
+          <a href="#" class="sre-btn sre-btn-secondary sre-btn-sm" data-dom-id="link-health">查看全部</a>
+        </div>
+        <div class="sre-list">
+          <div class="sre-list-row">
+            <div>
+              <div>default / Deployment / api-gateway 内存使用超过 85%</div>
+              <div class="sre-list-meta">2 分钟前 · 持续 12 分钟</div>
+            </div>
+            <span class="sre-badge sre-badge-error">CRITICAL</span>
+          </div>
+          <div class="sre-list-row">
+            <div>
+              <div>kube-system / Node / ip-10-0-4-7 磁盘压力阈值触发</div>
+              <div class="sre-list-meta">15 分钟前 · 持续 1 小时</div>
+            </div>
+            <span class="sre-badge sre-badge-warning">WARNING</span>
+          </div>
+          <div class="sre-list-row">
+            <div>
+              <div>monitoring / Pod / prometheus-0 重启 2 次</div>
+              <div class="sre-list-meta">32 分钟前 · 已恢复</div>
+            </div>
+            <span class="sre-badge sre-badge-info">INFO</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sre-card" style="padding:20px;margin-bottom:24px">
+          <h2 class="sre-section-title" style="margin:0 0 16px">资源概览</h2>
+          <div style="margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span>CPU</span><span class="sre-text-muted">62%</span></div>
+            <div class="sre-progress"><div class="sre-progress-bar" style="width:62%"></div></div>
+          </div>
+          <div style="margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span>Memory</span><span class="sre-text-muted">78%</span></div>
+            <div class="sre-progress"><div class="sre-progress-bar" style="width:78%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span>Storage</span><span class="sre-text-muted">45%</span></div>
+            <div class="sre-progress"><div class="sre-progress-bar" style="width:45%"></div></div>
+          </div>
+        </div>
+        <div class="sre-card" style="padding:20px">
+          <h2 class="sre-section-title" style="margin:0 0 16px">快捷入口</h2>
+          <div class="sre-shortcut-grid">
+            <button class="sre-btn sre-btn-primary" data-dom-id="cta-workbench"><i data-lucide="message-square" style="width:16px;height:16px"></i> 智能助手</button>
+            <button class="sre-btn sre-btn-secondary" data-dom-id="link-health"><i data-lucide="activity" style="width:16px;height:16px"></i> 健康检查</button>
+            <button class="sre-btn sre-btn-secondary" data-dom-id="nav-runbooks"><i data-lucide="book-open" style="width:16px;height:16px"></i> Runbooks</button>
+            <button class="sre-btn sre-btn-secondary" data-dom-id="nav-approvals"><i data-lucide="shield-check" style="width:16px;height:16px"></i> 审批</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+    <script>lucide.createIcons();</script>
+<script>
+(async () => {
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  let data;
+  try { data = await (await fetch('/api/ui/dashboard')).json(); }
+  catch (e) { data = { source: 'error', recent_alerts: [], resources: {} }; }
+
+  const kpis = document.querySelectorAll('.sre-kpi');
+  const setKpi = (i, value, delta, color) => {
+    if (!kpis[i]) return;
+    const v = kpis[i].querySelector('.sre-kpi-value');
+    if (v) { v.textContent = value; if (color) v.style.color = color; }
+    const d = kpis[i].querySelector('.sre-kpi-delta');
+    if (d) d.textContent = delta || '';
+  };
+  setKpi(0, data.health_score, data.health_score_delta, 'var(--sre-state-success)');
+  setKpi(1, data.pods_running, data.pods_pending);
+  setKpi(2, data.alerts_open, data.alerts_critical, 'var(--sre-state-error)');
+  setKpi(3, data.pending_approvals, data.pending_approvals_delta, 'var(--sre-state-warning)');
+
+  const sev = { critical: ['CRITICAL', 'sre-badge-error'], warning: ['WARNING', 'sre-badge-warning'], info: ['INFO', 'sre-badge-info'] };
+  const list = document.querySelector('.sre-list');
+  if (list) {
+    list.querySelectorAll('.sre-list-row').forEach(r => r.remove());
+    (data.recent_alerts || []).forEach(a => {
+      const [label, cls] = sev[a.severity] || ['INFO', 'sre-badge-info'];
+      const row = document.createElement('div');
+      row.className = 'sre-list-row';
+      row.innerHTML = '<div><div>' + esc(a.title) + '</div><div class="sre-list-meta">' + esc(a.meta) + '</div></div><span class="sre-badge ' + cls + '">' + label + '</span>';
+      list.appendChild(row);
+    });
+  }
+
+  const res = data.resources || {};
+  const vals = [res.cpu, res.memory, res.storage];
+  document.querySelectorAll('.sre-progress').forEach((p, i) => {
+    const bar = p.querySelector('.sre-progress-bar');
+    if (bar && vals[i] != null) bar.style.width = vals[i] + '%';
+    const label = p.previousElementSibling && p.previousElementSibling.querySelector('.sre-text-muted');
+    if (label && vals[i] != null) label.textContent = vals[i] + '%';
+  });
+
+  const title = document.querySelector('.sre-section-title');
+  if (title && data.source) {
+    const badge = document.createElement('span');
+    badge.className = 'sre-badge ' + (data.source === 'live' ? 'sre-badge-success' : 'sre-badge-info');
+    badge.style.cssText = 'margin-left:10px;font-size:11px;vertical-align:middle';
+    badge.textContent = data.source === 'live' ? 'LIVE 实时' : 'DEMO 演示';
+    title.appendChild(badge);
+  }
+})();
+</script>
+  <script src="/ui/_sre-alerts.js"></script>
+</body>
+</html>

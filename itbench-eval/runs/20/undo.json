@@ -1,0 +1,198 @@
+[
+  {
+    "action": "patch",
+    "kind": "Deployment",
+    "name": "product-catalog",
+    "namespace": "test-agent",
+    "before": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "product-catalog",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "product-catalog",
+          "app.kubernetes.io/part-of": "opentelemetry-demo",
+          "app.kubernetes.io/version": "3.1.0",
+          "helm.sh/chart": "opentelemetry-demo-0.42.3",
+          "opentelemetry.io/name": "product-catalog"
+        },
+        "name": "product-catalog",
+        "namespace": "test-agent"
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "opentelemetry.io/name": "product-catalog"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "annotations": {
+              "resource.opentelemetry.io/service.namespace": "opentelemetry-demo"
+            },
+            "labels": {
+              "app.kubernetes.io/component": "product-catalog",
+              "app.kubernetes.io/name": "product-catalog",
+              "app.kubernetes.io/version": "3.1.0",
+              "opentelemetry.io/name": "product-catalog"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "OTEL_SERVICE_NAME",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.labels['app.kubernetes.io/component']"
+                      }
+                    }
+                  },
+                  {
+                    "name": "OTEL_COLLECTOR_NAME",
+                    "value": "otel-collector"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE",
+                    "value": "cumulative"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_METRICS_DEFAULT_HISTOGRAM_AGGREGATION",
+                    "value": "explicit_bucket_histogram"
+                  },
+                  {
+                    "name": "PRODUCT_CATALOG_PORT",
+                    "value": "8080"
+                  },
+                  {
+                    "name": "FLAGD_HOST",
+                    "value": "flagd"
+                  },
+                  {
+                    "name": "FLAGD_PORT",
+                    "value": "8013"
+                  },
+                  {
+                    "name": "GOMEMLIMIT",
+                    "value": "16MiB"
+                  },
+                  {
+                    "name": "OTEL_GO_X_OBSERVABILITY",
+                    "value": "true"
+                  },
+                  {
+                    "name": "DB_CONNECTION_STRING",
+                    "value": "postgres://astronomy_user:astronomy_password@astronomy-db/astronomy_db?sslmode=disable"
+                  },
+                  {
+                    "name": "OTEL_SEMCONV_STABILITY_OPT_IN",
+                    "value": "database"
+                  },
+                  {
+                    "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+                    "value": "http://$(OTEL_COLLECTOR_NAME):4317"
+                  },
+                  {
+                    "name": "OPAMP_SERVER_ENDPOINT",
+                    "value": "ws://opamp-server:4320/v1/opamp"
+                  },
+                  {
+                    "name": "OPAMP_SERVER_TLS_INSECURE_SKIP_VERIFY",
+                    "value": "false"
+                  },
+                  {
+                    "name": "OTEL_CONFIG_FILE",
+                    "value": "/otel-config.yml"
+                  },
+                  {
+                    "name": "OTEL_RESOURCE_ATTRIBUTES",
+                    "value": "service.version=3.1.0,service.criticality=high"
+                  }
+                ],
+                "image": "ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-product-catalog",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "product-catalog",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "service",
+                    "protocol": "TCP"
+                  }
+                ],
+                "resources": {
+                  "limits": {
+                    "memory": "32Mi"
+                  }
+                },
+                "securityContext": {
+                  "readOnlyRootFilesystem": true
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/otel-config.yml",
+                    "name": "product-catalog-otel-config",
+                    "subPath": "otel-config.yml"
+                  },
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "initContainers": [
+              {
+                "command": [
+                  "sh",
+                  "-c",
+                  "until nc -z -v -w30 astronomy-db 5432; do echo waiting for astronomy-db; sleep 2; done;"
+                ],
+                "image": "busybox:latest",
+                "imagePullPolicy": "Always",
+                "name": "wait-for-astronomy-db",
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "otel-demo",
+            "serviceAccountName": "otel-demo",
+            "terminationGracePeriodSeconds": 30,
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "product-catalog-product-catalog-otel-config"
+                },
+                "name": "product-catalog-otel-config"
+              },
+              {
+                "emptyDir": {},
+                "name": "tmp"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+]

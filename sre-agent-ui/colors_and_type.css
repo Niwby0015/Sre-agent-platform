@@ -1,0 +1,51 @@
+/* SRE-Agent UI — dark ops console tokens */
+
+:root {
+  /* Neutral foundation */
+  --sre-background: #0b0b0f;
+  --sre-foreground: #e8e8ef;
+  --sre-card: #14141a;
+  --sre-card-foreground: #e8e8ef;
+  --sre-popover: #14141a;
+  --sre-popover-foreground: #e8e8ef;
+  --sre-muted: #1e1e24;
+  --sre-muted-foreground: #9ca3af;
+  --sre-border: rgba(255, 255, 255, 0.08);
+  --sre-input: rgba(255, 255, 255, 0.06);
+  --sre-ring: #22d3ee;
+
+  /* Brand primary — cyan */
+  --sre-primary: #22d3ee;
+  --sre-primary-foreground: #061519;
+  --sre-primary-hover: #67e8f9;
+  --sre-primary-subtle: rgba(34, 211, 238, 0.12);
+
+  /* Semantic surfaces */
+  --sre-surface: #14141a;
+  --sre-surface-2: #1e1e24;
+  --sre-surface-3: #272730;
+  --sre-line: rgba(255, 255, 255, 0.08);
+
+  /* State colors */
+  --sre-state-success: #22c55e;
+  --sre-state-success-subtle: rgba(34, 197, 94, 0.12);
+  --sre-state-warning: #f59e0b;
+  --sre-state-warning-subtle: rgba(245, 158, 11, 0.12);
+  --sre-state-error: #ef4444;
+  --sre-state-error-subtle: rgba(239, 68, 68, 0.12);
+  --sre-state-info: #3b82f6;
+  --sre-state-info-subtle: rgba(59, 130, 246, 0.12);
+
+  /* Radius */
+  --sre-radius-small: 4px;
+  --sre-radius-medium: 8px;
+  --sre-radius-large: 12px;
+
+  /* Typography */
+  --sre-font-sans: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --sre-font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+}
+
+.dark {
+  color-scheme: dark;
+}

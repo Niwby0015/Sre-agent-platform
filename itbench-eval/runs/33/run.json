@@ -1,0 +1,33 @@
+{
+  "scenario_id": "33",
+  "namespace": "test-agent",
+  "task": "The `ad` and `cart` services in namespace `test-agent` are failing \u2014 callers report errors. Find the root cause and restore service.",
+  "model": "claude-sonnet-4-6",
+  "subagent_model": "claude-haiku-4-5",
+  "hitl_enabled": false,
+  "timeout_seconds": 300,
+  "started_at": "2026-10-16T03:51:59.377338+00:00",
+  "env": {
+    "HITL_ENABLED": "false",
+    "DATABASE_URL": "",
+    "PROMETHEUS_URL": "http://10.97.161.150:9090",
+    "proxies_dropped": "ALL_PROXY, all_proxy, HTTP_PROXY, http_proxy, HTTPS_PROXY, https_proxy"
+  },
+  "kubeconfig": "/root/.kube/test-agent-eval.kubeconfig",
+  "sandbox": "/tmp/sre-eval-33-iqq9augz",
+  "finished_at": "2026-10-16T03:57:09.782333+00:00",
+  "elapsed_seconds": 310.4,
+  "run_status": "timeout",
+  "error": "run exceeded its 300s budget",
+  "stats": {
+    "messages": 74,
+    "model_calls": 18,
+    "tool_calls": 58,
+    "tool_results": 55,
+    "input_tokens": 579447,
+    "output_tokens": 25519
+  },
+  "verdict": "COMPLETE",
+  "verdict_reason": "target objects match pre-fault and are serving",
+  "agent_claims_resolved": "unknown"
+}

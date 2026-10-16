@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技能中心</title>
+    <style id="theme-vars">
+/* SRE-Agent UI — light ops console tokens */
+
+:root {
+  /* Neutral foundation */
+  --sre-background: #ffffff;
+  --sre-foreground: #1f2937;
+  --sre-card: #ffffff;
+  --sre-card-foreground: #1f2937;
+  --sre-popover: #ffffff;
+  --sre-popover-foreground: #1f2937;
+  --sre-muted: #f3f4f6;
+  --sre-muted-foreground: #6b7280;
+  --sre-border: #e5e7eb;
+  --sre-input: #f9fafb;
+  --sre-ring: #0891b2;
+
+  /* Brand primary — cyan */
+  --sre-primary: #0e7490;
+  --sre-primary-foreground: #ffffff;
+  --sre-primary-hover: #155e75;
+  --sre-primary-subtle: rgba(14, 116, 144, 0.10);
+
+  /* Semantic surfaces */
+  --sre-surface: #ffffff;
+  --sre-surface-2: #f3f4f6;
+  --sre-surface-3: #e5e7eb;
+  --sre-line: #e5e7eb;
+
+  /* State colors */
+  --sre-state-success: #16a34a;
+  --sre-state-success-subtle: rgba(22, 163, 74, 0.12);
+  --sre-state-warning: #d97706;
+  --sre-state-warning-subtle: rgba(217, 119, 6, 0.12);
+  --sre-state-error: #dc2626;
+  --sre-state-error-subtle: rgba(220, 38, 38, 0.12);
+  --sre-state-info: #2563eb;
+  --sre-state-info-subtle: rgba(37, 99, 235, 0.12);
+
+  /* Radius */
+  --sre-radius-small: 4px;
+  --sre-radius-medium: 8px;
+  --sre-radius-large: 12px;
+
+  /* Typography */
+  --sre-font-sans: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --sre-font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+}
+
+.light {
+  color-scheme: light;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--sre-background);
+    --color-foreground: var(--sre-foreground);
+    --color-card: var(--sre-card);
+    --color-card-foreground: var(--sre-card-foreground);
+    --color-popover: var(--sre-popover);
+    --color-popover-foreground: var(--sre-popover-foreground);
+    --color-primary: var(--sre-primary);
+    --color-primary-foreground: var(--sre-primary-foreground);
+    --color-muted: var(--sre-muted);
+    --color-muted-foreground: var(--sre-muted-foreground);
+    --color-border: var(--sre-border);
+    --color-input: var(--sre-input);
+    --color-ring: var(--sre-ring);
+    --radius-sm: var(--sre-radius-small);
+    --radius-md: var(--sre-radius-medium);
+    --radius-lg: var(--sre-radius-large);
+  }
+  @layer base {
+    body { background: var(--sre-background); color: var(--sre-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--sre-background); }
+      .text-background { color: var(--sre-background); }
+      .border-background { border-color: var(--sre-background); }
+      .ring-background { --tw-ring-color: var(--sre-background); }
+      .bg-foreground { background-color: var(--sre-foreground); }
+      .text-foreground { color: var(--sre-foreground); }
+      .border-foreground { border-color: var(--sre-foreground); }
+      .ring-foreground { --tw-ring-color: var(--sre-foreground); }
+      .bg-card { background-color: var(--sre-card); }
+      .text-card { color: var(--sre-card); }
+      .border-card { border-color: var(--sre-card); }
+      .ring-card { --tw-ring-color: var(--sre-card); }
+      .bg-card-foreground { background-color: var(--sre-card-foreground); }
+      .text-card-foreground { color: var(--sre-card-foreground); }
+      .border-card-foreground { border-color: var(--sre-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--sre-card-foreground); }
+      .bg-popover { background-color: var(--sre-popover); }
+      .text-popover { color: var(--sre-popover); }
+      .border-popover { border-color: var(--sre-popover); }
+      .ring-popover { --tw-ring-color: var(--sre-popover); }
+      .bg-popover-foreground { background-color: var(--sre-popover-foreground); }
+      .text-popover-foreground { color: var(--sre-popover-foreground); }
+      .border-popover-foreground { border-color: var(--sre-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--sre-popover-foreground); }
+      .bg-primary { background-color: var(--sre-primary); }
+      .text-primary { color: var(--sre-primary); }
+      .border-primary { border-color: var(--sre-primary); }
+      .ring-primary { --tw-ring-color: var(--sre-primary); }
+      .bg-primary-foreground { background-color: var(--sre-primary-foreground); }
+      .text-primary-foreground { color: var(--sre-primary-foreground); }
+      .border-primary-foreground { border-color: var(--sre-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--sre-primary-foreground); }
+      .bg-muted { background-color: var(--sre-muted); }
+      .text-muted { color: var(--sre-muted); }
+      .border-muted { border-color: var(--sre-muted); }
+      .ring-muted { --tw-ring-color: var(--sre-muted); }
+      .bg-muted-foreground { background-color: var(--sre-muted-foreground); }
+      .text-muted-foreground { color: var(--sre-muted-foreground); }
+      .border-muted-foreground { border-color: var(--sre-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--sre-muted-foreground); }
+      .bg-border { background-color: var(--sre-border); }
+      .text-border { color: var(--sre-border); }
+      .border-border { border-color: var(--sre-border); }
+      .ring-border { --tw-ring-color: var(--sre-border); }
+      .bg-input { background-color: var(--sre-input); }
+      .text-input { color: var(--sre-input); }
+      .border-input { border-color: var(--sre-input); }
+      .ring-input { --tw-ring-color: var(--sre-input); }
+      .bg-ring { background-color: var(--sre-ring); }
+      .text-ring { color: var(--sre-ring); }
+      .border-ring { border-color: var(--sre-ring); }
+      .ring-ring { --tw-ring-color: var(--sre-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+<div class="sre-shell">
+  <header class="sre-topbar">
+    <div class="sre-topbar-left">
+      <div class="sre-logo">
+        <span class="sre-logo-mark">SRE</span>
+        <span>AI-SRE</span>
+      </div>
+      <select class="sre-select" aria-label="集群">
+        <option>prod-cluster-01</option>
+        <option>staging-cluster</option>
+      </select>
+    </div>
+    <div class="sre-topbar-right">
+      <input class="sre-search" type="search" placeholder="搜索 Pod / 节点 / Runbook" />
+      <button class="sre-icon-btn" aria-label="通知"><i data-lucide="bell" style="width:16px;height:16px"></i></button>
+      <span class="sre-avatar">OP</span>
+    </div>
+  </header>
+
+  <nav class="sre-sidebar">
+    <a href="dashboard.html" class="sre-nav-item" data-nav-key="dashboard" data-dom-id="nav-dashboard"><i data-lucide="layout-dashboard"></i> 总览</a>
+    <div class="sre-nav-group">
+      <div class="sre-nav-item sre-nav-group-label"><i data-lucide="message-square"></i> 智能助手</div>
+      <div class="sre-nav-sub">
+        <a href="workbench.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="workbench" data-dom-id="nav-workbench">工作台</a>
+        <a href="skillhub.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="skillhub" data-dom-id="nav-skillhub" data-active="true">技能中心</a>
+      </div>
+    </div>
+    <a href="runbooks.html" class="sre-nav-item" data-nav-key="runbooks" data-dom-id="nav-runbooks"><i data-lucide="book-open"></i> Runbook 资料库</a>
+    <a href="health.html" class="sre-nav-item" data-nav-key="health" data-dom-id="nav-health"><i data-lucide="activity"></i> 健康检查</a>
+    <div class="sre-nav-group">
+      <div class="sre-nav-item sre-nav-group-label"><i data-lucide="bar-chart-3"></i> 数据中心</div>
+      <div class="sre-nav-sub">
+        <a href="datacenter.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="datacenter" data-dom-id="nav-datacenter">总览</a>
+        <a href="datacenter-pods.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-pods" data-dom-id="nav-dc-pods">Pod</a>
+        <a href="datacenter-workloads.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-workloads" data-dom-id="nav-dc-workloads">工作负载</a>
+        <a href="datacenter-nodes.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-nodes" data-dom-id="nav-dc-nodes">节点</a>
+        <a href="datacenter-storage.html" class="sre-nav-item sre-nav-sub-item" data-nav-key="dc-storage" data-dom-id="nav-dc-storage">存储</a>
+      </div>
+    </div>
+    <a href="alerts.html" class="sre-nav-item" data-nav-key="alerts" data-dom-id="nav-alerts"><i data-lucide="bell-ring"></i> 告警中心</a>
+    <a href="approvals.html" class="sre-nav-item" data-nav-key="approvals" data-dom-id="nav-approvals"><i data-lucide="shield-check"></i> 审批中心</a>
+    <a href="audit.html" class="sre-nav-item" data-nav-key="audit" data-dom-id="nav-audit"><i data-lucide="clipboard-list"></i> 审计日志</a>
+  </nav>
+
+  <main class="sre-main">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <h1 class="sre-section-title" style="margin:0">技能中心</h1>
+        <span id="source-badge" class="sre-badge sre-badge-info">加载中</span>
+      </div>
+      <button id="btn-new" class="sre-btn sre-btn-primary sre-btn-sm"><i data-lucide="plus" style="width:14px;height:14px"></i> 新增技能</button>
+    </div>
+
+    <div class="sre-skill-layout">
+      <div class="sre-agent-list" id="agent-list"></div>
+      <div class="sre-skill-panel">
+        <div class="sre-skill-panel-head">
+          <div>
+            <div id="panel-title" class="sre-skill-name" style="font-family:var(--sre-font-sans)">技能</div>
+            <div id="skill-count" class="sre-text-tertiary" style="margin-top:2px"></div>
+          </div>
+        </div>
+        <div id="skill-panel" class="sre-list"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="skill-modal" class="sre-modal-backdrop" hidden>
+  <div class="sre-modal">
+    <h2 id="modal-title" style="font-size:16px;font-weight:600;margin-bottom:16px">新增技能</h2>
+    <div class="sre-form-field">
+      <label class="sre-form-label">skill_name（小写字母/数字，单个连字符分隔）</label>
+      <input id="f-name" class="sre-form-input" type="text" placeholder="e.g. memory-troubleshooting" />
+    </div>
+    <div class="sre-form-field">
+      <label class="sre-form-label">描述</label>
+      <input id="f-desc" class="sre-form-input" type="text" placeholder="一句话说明该技能的用途" />
+    </div>
+    <div class="sre-form-field">
+      <label class="sre-form-label">内容（SKILL.md 正文）</label>
+      <textarea id="f-content" class="sre-form-textarea" placeholder="步骤化流程 / 领域知识"></textarea>
+    </div>
+    <div id="f-error" class="sre-form-error" hidden></div>
+    <div style="display:flex;justify-content:flex-end;gap:10px">
+      <button id="modal-cancel" class="sre-btn sre-btn-secondary">取消</button>
+      <button id="modal-submit" class="sre-btn sre-btn-primary">保存</button>
+    </div>
+  </div>
+</div>
+
+    <script>lucide.createIcons();</script>
+
+    <style>
+  .sre-shell { display: flex; min-height: 100vh; background: var(--sre-background); color: var(--sre-foreground); font-family: var(--sre-font-sans); }
+  .sre-topbar { position: fixed; inset: 0 0 auto 0; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: var(--sre-surface); border-bottom: 1px solid var(--sre-line); z-index: 50; }
+  .sre-topbar-left, .sre-topbar-right { display: flex; align-items: center; gap: 16px; }
+  .sre-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -0.02em; }
+  .sre-logo-mark { width: 28px; height: 28px; border-radius: var(--sre-radius-medium); background: var(--sre-primary); color: var(--sre-primary-foreground); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .sre-select { height: 32px; padding: 0 28px 0 12px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 13px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+  .sre-search { width: 240px; height: 32px; padding: 0 12px 0 32px; border-radius: var(--sre-radius-medium); background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); font-size: 13px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 10px center; }
+  .sre-icon-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--sre-radius-medium); background: transparent; border: 1px solid var(--sre-border); color: var(--sre-muted-foreground); cursor: pointer; }
+  .sre-avatar { width: 30px; height: 30px; border-radius: 9999px; background: var(--sre-surface-3); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; color: var(--sre-muted-foreground); border: 1px solid var(--sre-border); }
+  .sre-sidebar { position: fixed; top: 56px; left: 0; bottom: 0; width: 220px; padding: 16px 12px; background: var(--sre-surface); border-right: 1px solid var(--sre-line); display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+  .sre-nav-item { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-radius: var(--sre-radius-medium); color: var(--sre-muted-foreground); font-size: 14px; text-decoration: none; transition: background 120ms ease, color 120ms ease; }
+  .sre-nav-item:hover { background: var(--sre-surface-2); color: var(--sre-foreground); }
+  .sre-nav-item[data-active="true"] { background: var(--sre-primary-subtle); color: var(--sre-primary); }
+  .sre-nav-item i { width: 18px; height: 18px; }
+  .sre-nav-group { display: flex; flex-direction: column; }
+  .sre-nav-group-label { cursor: default; }
+  .sre-nav-group-label:hover { background: transparent; color: var(--sre-muted-foreground); }
+  .sre-nav-sub { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 6px 9px; padding-left: 16px; border-left: 1px solid var(--sre-border); }
+  .sre-nav-sub-item { height: 34px; font-size: 13px; padding-left: 10px; }
+  .sre-main { margin-left: 220px; margin-top: 56px; min-height: calc(100vh - 56px); padding: 24px; flex: 1 1 auto; min-width: 0; }
+  .sre-card { background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); }
+  .sre-section-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; }
+  .sre-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--sre-radius-medium); font-size: 12px; font-weight: 600; }
+  .sre-badge-error { background: var(--sre-state-error-subtle); color: var(--sre-state-error); }
+  .sre-badge-warning { background: var(--sre-state-warning-subtle); color: var(--sre-state-warning); }
+  .sre-badge-success { background: var(--sre-state-success-subtle); color: var(--sre-state-success); }
+  .sre-badge-info { background: var(--sre-state-info-subtle); color: var(--sre-state-info); }
+  .sre-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: var(--sre-radius-medium); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 120ms ease; }
+  .sre-btn-primary { background: var(--sre-primary); color: var(--sre-primary-foreground); }
+  .sre-btn-primary:hover { background: var(--sre-primary-hover); }
+  .sre-btn-secondary { background: var(--sre-surface-2); color: var(--sre-foreground); border: 1px solid var(--sre-border); }
+  .sre-btn-secondary:hover { background: var(--sre-surface-3); }
+  .sre-btn-sm { height: 30px; padding: 0 12px; font-size: 13px; }
+  .sre-text-muted { color: var(--sre-muted-foreground); }
+  .sre-text-tertiary { color: var(--sre-muted-foreground); font-size: 13px; }
+  .sre-empty { padding: 48px; text-align: center; color: var(--sre-muted-foreground); }
+  .sre-list { display: flex; flex-direction: column; }
+
+  /* SkillHub layout */
+  .sre-skill-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
+  .sre-agent-list { background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); overflow: hidden; }
+  .sre-agent-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--sre-border); font-size: 14px; color: var(--sre-foreground); }
+  .sre-agent-item:last-child { border-bottom: none; }
+  .sre-agent-item:hover { background: var(--sre-surface-2); }
+  .sre-agent-item[data-active="true"] { background: var(--sre-primary-subtle); color: var(--sre-primary); }
+  .sre-skill-panel { background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); overflow: hidden; }
+  .sre-skill-panel-head { padding: 16px 20px; border-bottom: 1px solid var(--sre-border); display: flex; align-items: center; justify-content: space-between; }
+  .sre-skill-name { font-family: var(--sre-font-mono); font-size: 14px; font-weight: 600; }
+  .sre-skill-card { padding: 16px 20px; border-bottom: 1px solid var(--sre-border); }
+  .sre-skill-card:last-child { border-bottom: none; }
+  .sre-skill-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .sre-skill-desc { font-size: 13px; color: var(--sre-muted-foreground); margin-top: 6px; line-height: 1.5; }
+  .sre-skill-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .sre-icon-btn-sm { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--sre-radius-medium); background: transparent; border: 1px solid var(--sre-border); color: var(--sre-muted-foreground); cursor: pointer; }
+  .sre-icon-btn-sm:hover { background: var(--sre-surface-3); color: var(--sre-foreground); }
+  .sre-icon-btn-sm i { width: 14px; height: 14px; }
+
+  /* Toggle switch */
+  .sre-switch { position: relative; display: inline-block; width: 38px; height: 22px; flex-shrink: 0; }
+  .sre-switch input { opacity: 0; width: 0; height: 0; }
+  .sre-switch .track { position: absolute; inset: 0; background: var(--sre-surface-3); border-radius: 9999px; transition: background 120ms ease; cursor: pointer; }
+  .sre-switch .track::before { content: ''; position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; background: var(--sre-foreground); border-radius: 50%; transition: transform 120ms ease; }
+  .sre-switch input:checked + .track { background: var(--sre-primary); }
+  .sre-switch input:checked + .track::before { transform: translateX(16px); background: var(--sre-primary-foreground); }
+
+  /* Modal */
+  .sre-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 24px; }
+  .sre-modal { width: 560px; max-width: 100%; max-height: calc(100vh - 48px); overflow-y: auto; background: var(--sre-card); border: 1px solid var(--sre-border); border-radius: var(--sre-radius-large); padding: 24px; }
+  .sre-form-field { margin-bottom: 16px; }
+  .sre-form-label { display: block; font-size: 13px; color: var(--sre-muted-foreground); margin-bottom: 6px; }
+  .sre-form-input, .sre-form-textarea { width: 100%; background: var(--sre-input); border: 1px solid var(--sre-border); color: var(--sre-foreground); border-radius: var(--sre-radius-medium); padding: 10px 12px; font-size: 14px; }
+  .sre-form-input:focus, .sre-form-textarea:focus { outline: none; border-color: var(--sre-ring); }
+  .sre-form-textarea { min-height: 180px; font-family: var(--sre-font-mono); font-size: 12px; resize: vertical; line-height: 1.6; }
+  .sre-form-error { color: var(--sre-state-error); font-size: 13px; margin-bottom: 12px; }
+    </style>
+    <script>
+(function () {
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const NAME_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+  const textOf = async r => { try { const j = await r.json(); return j.detail || r.statusText; } catch (e) { return r.statusText; } };
+
+  let currentAgent = null;
+  let agents = [];
+  let skills = [];
+  let editingName = null; // null => create mode; string => editing that skill
+
+  const agentListEl = document.getElementById('agent-list');
+  const skillPanelEl = document.getElementById('skill-panel');
+  const panelTitle = document.getElementById('panel-title');
+  const skillCountEl = document.getElementById('skill-count');
+  const sourceBadge = document.getElementById('source-badge');
+  const btnNew = document.getElementById('btn-new');
+  const modal = document.getElementById('skill-modal');
+  const modalTitle = document.getElementById('modal-title');
+  const fName = document.getElementById('f-name');
+  const fDesc = document.getElementById('f-desc');
+  const fContent = document.getElementById('f-content');
+  const fError = document.getElementById('f-error');
+
+  function setSource(source) {
+    if (source === 'live') {
+      sourceBadge.textContent = 'LIVE 实时';
+      sourceBadge.className = 'sre-badge sre-badge-success';
+    } else {
+      sourceBadge.textContent = '内存 临时';
+      sourceBadge.className = 'sre-badge sre-badge-warning';
+    }
+  }
+
+  function icon(name) {
+    return '<i data-lucide="' + esc(name) + '" style="width:14px;height:14px"></i>';
+  }
+
+  function showError(msg) { fError.textContent = msg; fError.hidden = false; }
+  function hideError() { fError.textContent = ''; fError.hidden = true; }
+
+  async function loadAgents() {
+    const d = await (await fetch('/api/skillhub/agents')).json();
+    setSource(d.source);
+    agents = d.agents || [];
+    renderAgents();
+    if (!currentAgent && agents.length) await selectAgent(agents[0].name);
+  }
+
+  function renderAgents() {
+    agentListEl.innerHTML = '';
+    agents.forEach(a => {
+      const row = document.createElement('div');
+      row.className = 'sre-agent-item';
+      row.setAttribute('data-name', a.name);
+      if (a.name === currentAgent) row.setAttribute('data-active', 'true');
+      const label = document.createElement('span');
+      label.textContent = a.label;
+      const badge = document.createElement('span');
+      badge.className = 'sre-badge sre-badge-info';
+      badge.textContent = a.skill_count;
+      row.appendChild(label);
+      row.appendChild(badge);
+      row.addEventListener('click', () => selectAgent(a.name));
+      agentListEl.appendChild(row);
+    });
+  }
+
+  async function selectAgent(name) {
+    currentAgent = name;
+    document.querySelectorAll('.sre-agent-item').forEach(r => {
+      r.setAttribute('data-active', r.getAttribute('data-name') === name ? 'true' : 'false');
+    });
+    const label = (agents.find(a => a.name === name) || {}).label || name;
+    panelTitle.textContent = label + ' 技能';
+    await loadSkills();
+  }
+
+  async function loadSkills() {
+    const d = await (await fetch('/api/skillhub/' + encodeURIComponent(currentAgent) + '/skills')).json();
+    setSource(d.source);
+    skills = d.skills || [];
+    skillCountEl.textContent = skills.filter(s => s.enabled).length + ' 个已启用 / 共 ' + skills.length + ' 个';
+    renderSkills();
+  }
+
+  function renderSkills() {
+    skillPanelEl.innerHTML = '';
+    if (!skills.length) {
+      const empty = document.createElement('div');
+      empty.className = 'sre-empty';
+      empty.textContent = '暂无技能，点击右上角「新增技能」创建';
+      skillPanelEl.appendChild(empty);
+      return;
+    }
+    skills.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'sre-skill-card';
+
+      const head = document.createElement('div');
+      head.className = 'sre-skill-card-head';
+
+      const left = document.createElement('div');
+      const name = document.createElement('div');
+      name.className = 'sre-skill-name';
+      name.textContent = s.skill_name;
+      const meta = document.createElement('div');
+      meta.className = 'sre-text-tertiary';
+      meta.style.marginTop = '2px';
+      meta.textContent = 'v' + s.version;
+      left.appendChild(name);
+      left.appendChild(meta);
+
+      const actions = document.createElement('div');
+      actions.className = 'sre-skill-actions';
+
+      const sw = document.createElement('label');
+      sw.className = 'sre-switch';
+      sw.title = s.enabled ? '禁用' : '启用';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!s.enabled;
+      cb.addEventListener('change', () => toggle(s, cb.checked));
+      const track = document.createElement('span');
+      track.className = 'track';
+      sw.appendChild(cb);
+      sw.appendChild(track);
+      actions.appendChild(sw);
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'sre-icon-btn-sm';
+      editBtn.title = '编辑';
+      editBtn.innerHTML = icon('pencil');
+      editBtn.addEventListener('click', () => openModal(s));
+      actions.appendChild(editBtn);
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'sre-icon-btn-sm';
+      delBtn.title = '删除';
+      delBtn.innerHTML = icon('trash-2');
+      delBtn.addEventListener('click', () => remove(s));
+      actions.appendChild(delBtn);
+
+      head.appendChild(left);
+      head.appendChild(actions);
+      card.appendChild(head);
+
+      const desc = document.createElement('div');
+      desc.className = 'sre-skill-desc';
+      desc.textContent = s.description || '(无描述)';
+      card.appendChild(desc);
+
+      skillPanelEl.appendChild(card);
+    });
+    lucide.createIcons();
+  }
+
+  async function toggle(s, enabled) {
+    try {
+      const res = await fetch('/api/skillhub/' + encodeURIComponent(currentAgent) + '/' + encodeURIComponent(s.skill_name) + '/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled }),
+      });
+      if (!res.ok) throw new Error(await textOf(res));
+      s.enabled = enabled;
+      await loadSkills();
+      await loadAgents();
+    } catch (e) {
+      alert('切换失败：' + e.message);
+      await loadSkills();
+    }
+  }
+
+  async function remove(s) {
+    if (!confirm('确认删除技能 ' + s.skill_name + ' ？')) return;
+    try {
+      const res = await fetch('/api/skillhub/' + encodeURIComponent(currentAgent) + '/' + encodeURIComponent(s.skill_name), { method: 'DELETE' });
+      if (!res.ok) throw new Error(await textOf(res));
+      await loadSkills();
+      await loadAgents();
+    } catch (e) {
+      alert('删除失败：' + e.message);
+    }
+  }
+
+  function openModal(skill) {
+    editingName = skill ? skill.skill_name : null;
+    modalTitle.textContent = skill ? '编辑技能' : '新增技能';
+    fName.value = skill ? skill.skill_name : '';
+    fName.disabled = !!skill;
+    fDesc.value = skill ? (skill.description || '') : '';
+    fContent.value = skill ? (skill.content || '') : '';
+    hideError();
+    modal.hidden = false;
+  }
+
+  function hideModal() { modal.hidden = true; }
+
+  async function submitModal() {
+    const name = fName.value.trim();
+    const desc = fDesc.value.trim();
+    const content = fContent.value;
+    hideError();
+    if (!name) { showError('skill_name 不能为空'); return; }
+    if (editingName === null && !NAME_RE.test(name)) { showError('skill_name 只能是小写字母/数字，用单个连字符分隔'); return; }
+    try {
+      let res;
+      if (editingName === null) {
+        res = await fetch('/api/skillhub/' + encodeURIComponent(currentAgent) + '/skills', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ skill_name: name, description: desc, content }),
+        });
+      } else {
+        res = await fetch('/api/skillhub/' + encodeURIComponent(currentAgent) + '/' + encodeURIComponent(editingName), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ description: desc, content }),
+        });
+      }
+      if (!res.ok) throw new Error(await textOf(res));
+      hideModal();
+      await loadSkills();
+      await loadAgents();
+    } catch (e) {
+      showError(e.message);
+    }
+  }
+
+  btnNew.addEventListener('click', () => openModal(null));
+  document.getElementById('modal-cancel').addEventListener('click', hideModal);
+  document.getElementById('modal-submit').addEventListener('click', submitModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) hideModal(); });
+
+  loadAgents().catch(err => {
+    agentListEl.innerHTML = '<div class="sre-empty">加载失败：' + esc(err.message) + '</div>';
+  });
+})();
+    </script>
+  <script src="/ui/_sre-alerts.js"></script>
+</body>
+</html>

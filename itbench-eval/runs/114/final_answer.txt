@@ -1,0 +1,35 @@
+
+Service restored and verified.
+
+**Diagnosis:** The `product-catalog` Deployment, ReplicaSet and pod were all healthy (Running 5h, 0 restarts, Ready=True, memory ~16 MiB against a 32 MiB limit, correct image `demo:3.1.0-product-catalog`). The failure was one layer above: the ClusterIP **Service `product-catalog` did not exist**, so every caller resolving `product-catalog:8080` (frontend, recommendation, checkout, load-generator) hit a DNS/route dead end and reported errors — a total traffic blackhole with a perfectly healthy backend.
+
+**How I confirmed it independently (not from a single tool)**:
+- `kubectl_get_services` / `kubectl_get_endpoints`: 23 services, `product-catalog` absent from both — while every Deployment that legitimately has no Service (`accounting`, `fraud-detection` — both Kafka consumers) behaved as expected.
+- Prometheus (kube-state-metrics) as a second source: `kube_service_info{service="product-catalog"}` → **NO DATA**, with control queries for `service="frontend"` and `service="recommendation"` returning series (so the matcher was sound, not silently broken).
+- `kubectl_audit_selector_mismatch` was clean, ruling out a broken selector on an existing Service.
+- Ruled out as noise, not cause: the `lookup opensearch ... no such host` log flood is cross-cutting OTLP-export noise from the collector (opensearch is disabled by Helm values) and appears identically in unrelated pods such as `recommendation`.
+
+**Repair:** recreated the missing Service (ClusterIP, port/targetPort 8080) with the component label selector. No workload was deleted, scaled, or restarted; nothing outside `test-agent` was touched.
+
+**Verification after the change:** `product-catalog` appears in `kubectl_get_services` (10.99.46.117:8080), `kubectl_get_endpoints` shows `product-catalog  1 READY / 0 NOT-READY / OK`, a fresh EndpointSlice `product-catalog-zhf99` exists, `kubectl_audit_selector_mismatch` reports none, all 26 pods remain Running with 0 new restarts, and there are no Warning events in the namespace.
+
+```json
+{
+  "root_cause": "The ClusterIP Service `product-catalog` in namespace test-agent was missing entirely, so the healthy product-catalog pod had no Service/Endpoints and callers resolving product-catalog:8080 failed.",
+  "evidence": [
+    "kubectl_get_deployments / kubectl_get_pods: product-catalog 1/1 ready, pod Running 5h, 0 restarts, Ready=True",
+    "kubectl_describe_deployment + pod: image ghcr.nju.edu.cn/open-telemetry/demo:3.1.0-product-catalog correct, memory limit 32Mi, no crash/OOM evidence",
+    "kubectl_get_services (twice) and kubectl_get_endpoints: 23 services listed and 'product-catalog' absent from both, while every other demo component with a Service was present and OK",
+    "Prometheus kube_service_info{namespace='test-agent', service='product-catalog'} returned NO DATA, while control queries service='frontend' and service='recommendation' returned series (10.98.193.87 / 10.102.205.132), proving the matcher works and the Service really is absent",
+    "Prometheus kube_endpoint_info / kube_service_spec_type: 23 series each — no endpoints or Service object for product-catalog",
+    "kubectl_audit_selector_mismatch: none found — ruling out a wrong selector on an existing Service",
+    "Deployments without a Service (accounting, fraud-detection) are Kafka consumers and expected; product-catalog is not one of those cases",
+    "The 'lookup opensearch ... no such host' log flood also appears in unrelated pods (recommendation) and is collector OTLP-export noise because Helm values set opensearch.enabled=false — excluded as cause"
+  ],
+  "actions": [
+    {"tool": "task(agent=change-executor) -> kubectl apply", "target": "Service/test-agent/product-catalog (ClusterIP, port 8080 -> targetPort 8080, selector app.kubernetes.io/name=product-catalog)", "result": "applied"}
+  ],
+  "verification": "Re-read kubectl_get_services (product-catalog now present, ClusterIP 10.99.46.117, 8080/TCP), kubectl_get_endpoints (product-catalog 1 READY / 0 NOT-READY / OK), EndpointSlice product-catalog-zhf99 (age 0m) present, kubectl_audit_selector_mismatch (none found), kubectl_get_pods (all 26 pods Running, no new restarts) and kubectl_get_events warning_only (no events) — the blackhole is gone and the endpoint is populated.",
+  "resolved": true
+}
+```

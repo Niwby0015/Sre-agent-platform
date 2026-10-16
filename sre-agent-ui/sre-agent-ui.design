@@ -1,0 +1,283 @@
+{
+  "data": [
+    {
+      "id": "page-dashboard",
+      "title": "总览",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1788931042000,
+      "canvasData": {
+        "x": -24,
+        "y": 0,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-bf6d7b09",
+          "measuredAt": 1789019760304
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/dashboard.html",
+        "interactions": [
+          {
+            "domId": "nav-workbench",
+            "targetPageId": "page-workbench"
+          },
+          {
+            "domId": "nav-runbooks",
+            "targetPageId": "page-runbooks"
+          },
+          {
+            "domId": "nav-health",
+            "targetPageId": "page-health"
+          },
+          {
+            "domId": "nav-approvals",
+            "targetPageId": "page-approvals"
+          },
+          {
+            "domId": "nav-audit",
+            "targetPageId": "page-audit"
+          },
+          {
+            "domId": "cta-workbench",
+            "targetPageId": "page-workbench"
+          },
+          {
+            "domId": "link-health",
+            "targetPageId": "page-health"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-workbench",
+      "title": "智能助手",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1788931042000,
+      "canvasData": {
+        "x": 480,
+        "y": 0,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 1958,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-deec15e7",
+          "measuredAt": 1789019760304
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/workbench.html",
+        "interactions": [
+          {
+            "domId": "nav-dashboard",
+            "targetPageId": "page-dashboard"
+          },
+          {
+            "domId": "nav-runbooks",
+            "targetPageId": "page-runbooks"
+          },
+          {
+            "domId": "nav-health",
+            "targetPageId": "page-health"
+          },
+          {
+            "domId": "nav-approvals",
+            "targetPageId": "page-approvals"
+          },
+          {
+            "domId": "nav-audit",
+            "targetPageId": "page-audit"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-runbooks",
+      "title": "Runbook 资料库",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1788931042000,
+      "canvasData": {
+        "x": 480,
+        "y": 379.9999999999997,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-bf88e4ac",
+          "measuredAt": 1789019760304
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/runbooks.html",
+        "interactions": [
+          {
+            "domId": "nav-dashboard",
+            "targetPageId": "page-dashboard"
+          },
+          {
+            "domId": "nav-workbench",
+            "targetPageId": "page-workbench"
+          },
+          {
+            "domId": "nav-health",
+            "targetPageId": "page-health"
+          },
+          {
+            "domId": "nav-approvals",
+            "targetPageId": "page-approvals"
+          },
+          {
+            "domId": "nav-audit",
+            "targetPageId": "page-audit"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-health",
+      "title": "健康检查",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1788931042000,
+      "canvasData": {
+        "x": 480,
+        "y": 753,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-c324bc74",
+          "measuredAt": 1789019760304
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/health.html",
+        "interactions": [
+          {
+            "domId": "nav-dashboard",
+            "targetPageId": "page-dashboard"
+          },
+          {
+            "domId": "nav-workbench",
+            "targetPageId": "page-workbench"
+          },
+          {
+            "domId": "nav-runbooks",
+            "targetPageId": "page-runbooks"
+          },
+          {
+            "domId": "nav-approvals",
+            "targetPageId": "page-approvals"
+          },
+          {
+            "domId": "nav-audit",
+            "targetPageId": "page-audit"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-approvals",
+      "title": "审批中心",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1788931042000,
+      "canvasData": {
+        "x": 480,
+        "y": 1126,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-0117606b",
+          "measuredAt": 1789019760304
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/approvals.html",
+        "interactions": [
+          {
+            "domId": "nav-dashboard",
+            "targetPageId": "page-dashboard"
+          },
+          {
+            "domId": "nav-workbench",
+            "targetPageId": "page-workbench"
+          },
+          {
+            "domId": "nav-runbooks",
+            "targetPageId": "page-runbooks"
+          },
+          {
+            "domId": "nav-health",
+            "targetPageId": "page-health"
+          },
+          {
+            "domId": "nav-audit",
+            "targetPageId": "page-audit"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-audit",
+      "title": "审计日志",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1788931042000,
+      "canvasData": {
+        "x": 480,
+        "y": 1499,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-8d3299dd",
+          "measuredAt": 1789019760304
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/audit.html",
+        "interactions": [
+          {
+            "domId": "nav-dashboard",
+            "targetPageId": "page-dashboard"
+          },
+          {
+            "domId": "nav-workbench",
+            "targetPageId": "page-workbench"
+          },
+          {
+            "domId": "nav-runbooks",
+            "targetPageId": "page-runbooks"
+          },
+          {
+            "domId": "nav-health",
+            "targetPageId": "page-health"
+          },
+          {
+            "domId": "nav-approvals",
+            "targetPageId": "page-approvals"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": false,
+    "deviceType": "desktop",
+    "projectName": "SRE-Agent 运维工作台原型",
+    "designLibrary": null,
+    "visualEditorEnabled": false
+  }
+}

@@ -1,0 +1,153 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sre-agent
+  namespace: sre-agent
+  labels:
+    app.kubernetes.io/name: sre-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sre-agent
+  template:
+    metadata:
+      labels:
+        app: sre-agent
+        app.kubernetes.io/name: sre-agent
+    spec:
+      serviceAccountName: sre-agent
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: sre-agent
+          # Placeholder. deploy.sh overrides this with the real registry via
+          # `kubectl set image` so no account-specific value is ever committed.
+          # Deploying by hand? Run:
+          #   kubectl set image deployment/sre-agent \
+          #     sre-agent=<account>.dkr.ecr.<region>.amazonaws.com/sre-agent:latest \
+          #     -n sre-agent
+          image: REPLACE_WITH_YOUR_REGISTRY/sre-agent:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sre-agent-secrets
+                  key: ANTHROPIC_API_KEY
+            - name: LC_GATEWAY_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sre-agent-secrets
+                  key: LC_GATEWAY_KEY
+                  optional: true
+            - name: ANTHROPIC_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: sre-agent-secrets
+                  key: ANTHROPIC_BASE_URL
+                  optional: true
+            - name: SLACK_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: sre-agent-secrets
+                  key: SLACK_BOT_TOKEN
+                  optional: true
+            - name: SLACK_APP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: sre-agent-secrets
+                  key: SLACK_APP_TOKEN
+                  optional: true
+            - name: LANGSMITH_TRACING
+              value: "true"
+            - name: LANGCHAIN_TRACING_V2
+              value: "true"
+            - name: LANGSMITH_PROJECT
+              value: "sre-agent"
+            - name: LANGCHAIN_PROJECT
+              value: "sre-agent"
+            # Single destination. LANGSMITH_RUNS_ENDPOINTS was a multi-endpoint
+            # fan-out carrying a key per destination; it covers trace export only,
+            # so the dataset client (evals/run_eval.py, auto-recording findings)
+            # could not authenticate with it. LANGSMITH_API_KEY covers both.
+            - name: LANGSMITH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sre-agent-secrets
+                  key: LANGSMITH_API_KEY
+                  optional: true
+            # - name: LANGSMITH_RUNS_ENDPOINTS
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: sre-agent-secrets
+            #       key: LANGSMITH_RUNS_ENDPOINTS
+            - name: SLACK_CHANNEL
+              value: "#sre_alerts"
+            - name: MONITOR_INTERVAL_MINUTES
+              value: "60"                 # hourly
+            - name: MONITORING_ENABLED
+              value: "true"               # set to "false" to stop scheduled checks
+            - name: API_PORT
+              value: "8080"
+            - name: DEFAULT_NAMESPACES
+              value: ""                   # set to "ns1,ns2" to limit scope and reduce token usage
+            # Monitoring is now stateful: a Slack post happens only when the diff
+            # against the previous check contains something new, escalated, or
+            # newly resolved. The digest forces a report every N checks anyway so
+            # a quiet channel still proves the bot is alive.
+            - name: MONITOR_DIGEST_EVERY_N_CHECKS
+              value: "12"                 # at 60m interval => once every 12h
+            - name: MONITOR_NOTIFY_ON_RESOLVED
+              value: "true"
+            - name: MONITOR_ACK_HOURS
+              value: "24"                 # how long the Slack "Ack" button mutes a finding
+            # Comma-separated Slack user IDs allowed to approve/reject cluster
+            # changes. EMPTY MEANS ANY workspace user who can see the message can
+            # approve — set this to lock approvals to your on-call rotation.
+            - name: SLACK_APPROVER_IDS
+              value: ""
+            # - name: PROMETHEUS_URL
+            #   value: "http://prometheus-server.monitoring.svc.cluster.local:9090"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: conversation-history
+              mountPath: /app/conversation_history
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: conversation-history
+          emptyDir: {}
+      terminationGracePeriodSeconds: 30
